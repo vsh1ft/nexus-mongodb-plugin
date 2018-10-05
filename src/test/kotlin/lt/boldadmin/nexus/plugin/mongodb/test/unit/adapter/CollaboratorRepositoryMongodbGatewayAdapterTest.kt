@@ -51,7 +51,7 @@ class CollaboratorRepositoryMongodbGatewayAdapterTest {
             COLLABORATOR_ID
         )
 
-        assertSame(expectedCollaborator, actualCollaborator.get())
+        assertSame(expectedCollaborator, actualCollaborator)
     }
 
     @Test

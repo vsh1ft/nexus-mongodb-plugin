@@ -16,8 +16,8 @@ class CollaboratorRepositoryMongodbGatewayAdapter(private val collaboratorReposi
         return collaboratorRepository.existsById(id)
     }
 
-    override fun findById(id: String): Optional<Collaborator> {
-        return collaboratorRepository.findById(id)
+    override fun findById(id: String): Collaborator {
+        return collaboratorRepository.findById(id).get()
     }
 
     override fun existsByMobileNumber(mobileNumber: String): Boolean {

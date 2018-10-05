@@ -43,7 +43,7 @@ class ProjectRepositoryMongodbGatewayAdapterTest {
 
         val actualProject = adapter.findById(PROJECT_ID)
 
-        assertEquals(expectedProject, actualProject)
+        assertEquals(expectedProject.get(), actualProject)
     }
 
     @Test

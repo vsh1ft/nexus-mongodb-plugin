@@ -12,8 +12,8 @@ class ProjectRepositoryMongodbGatewayAdapter(private val projectRepository: Proj
         projectRepository.save(project)
     }
 
-    override fun findById(id: String): Optional<Project> {
-        return projectRepository.findById(id)
+    override fun findById(id: String): Project {
+        return projectRepository.findById(id).get()
     }
 
     override fun findByOrderNumberIsGreaterThanEqual(orderNumber: Short): Collection<Project> {

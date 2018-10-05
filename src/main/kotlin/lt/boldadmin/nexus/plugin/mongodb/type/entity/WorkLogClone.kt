@@ -1,11 +1,12 @@
 package lt.boldadmin.nexus.plugin.mongodb.type.entity
 
-import lt.boldadmin.nexus.api.type.entity.Collaborator
-import lt.boldadmin.nexus.api.type.entity.Project
+import lt.boldadmin.nexus.api.type.entity.*
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import org.springframework.data.mongodb.core.mapping.DBRef
+import org.springframework.data.mongodb.core.mapping.Document
 
-class WorkLogProxy(
+@Document(collection = "workLog")
+class WorkLogClone(
 
     @DBRef(lazy = true)
     val project: Project,
