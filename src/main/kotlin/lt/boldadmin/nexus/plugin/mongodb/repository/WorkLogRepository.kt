@@ -1,8 +1,7 @@
 package lt.boldadmin.nexus.plugin.mongodb.repository
 
-import lt.boldadmin.nexus.api.type.entity.WorkLog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
-import lt.boldadmin.nexus.plugin.mongodb.type.entity.WorkLogClone
+import lt.boldadmin.nexus.plugin.mongodb.clone.WorkLogClone
 import org.springframework.data.mongodb.repository.MongoRepository
 
 interface WorkLogRepository : MongoRepository<WorkLogClone, String> {

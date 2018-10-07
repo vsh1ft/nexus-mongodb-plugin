@@ -1,4 +1,4 @@
-package lt.boldadmin.nexus.plugin.mongodb.type.entity
+package lt.boldadmin.nexus.plugin.mongodb.clone
 
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Company
@@ -22,7 +22,7 @@ class CompanyClone(
 
 ) {
 
-    fun setClone(company: Company) {
+    internal fun set(company: Company) {
         this.apply {
             id = company.id
             name = company.name
@@ -31,7 +31,7 @@ class CompanyClone(
         }
     }
 
-    fun getRealObject() = Company().apply {
+    internal fun convertToCompany() = Company().apply {
         id = this@CompanyClone.id
         name = this@CompanyClone.name
         customers = this@CompanyClone.customers

@@ -1,4 +1,4 @@
-package lt.boldadmin.nexus.plugin.mongodb.type.entity
+package lt.boldadmin.nexus.plugin.mongodb.clone
 
 import lt.boldadmin.nexus.api.type.entity.*
 import org.springframework.data.mongodb.core.mapping.DBRef
@@ -19,7 +19,7 @@ class CustomerClone(
 
 ) : Person() {
 
-    fun setClone(customer: Customer) {
+    internal fun set(customer: Customer) {
         this.apply {
             id = customer.id
             name = customer.name
@@ -34,7 +34,7 @@ class CustomerClone(
         }
     }
 
-    fun getRealObject() = Customer().apply {
+    internal fun convertToCustomer() = Customer().apply {
         id = this@CustomerClone.id
         name = this@CustomerClone.name
         email = this@CustomerClone.email

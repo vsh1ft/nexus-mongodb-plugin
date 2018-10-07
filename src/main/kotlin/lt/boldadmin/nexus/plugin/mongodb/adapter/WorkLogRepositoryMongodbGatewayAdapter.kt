@@ -4,17 +4,17 @@ import lt.boldadmin.nexus.api.gateway.WorkLogRepositoryGateway
 import lt.boldadmin.nexus.api.type.entity.WorkLog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorkLogRepository
-import lt.boldadmin.nexus.plugin.mongodb.type.entity.WorkLogClone
+import lt.boldadmin.nexus.plugin.mongodb.clone.WorkLogClone
 
 class WorkLogRepositoryMongodbGatewayAdapter(private val workLogRepository: WorkLogRepository):
     WorkLogRepositoryGateway {
 
     override fun findById(id: String): WorkLog {
-        return getRealObject(workLogRepository.findById(id).get())!!
+        return workLogRepository.findById(id).get().convertToWorkLog()
     }
 
     override fun save(workLog: WorkLog) {
-        workLogRepository.save(cloneWorkLog(workLog))
+        workLogRepository.save(WorkLogClone().apply { set(workLog) })
     }
 
     override fun existsByIntervalId(intervalId: String): Boolean {
@@ -22,63 +22,40 @@ class WorkLogRepositoryMongodbGatewayAdapter(private val workLogRepository: Work
     }
 
     override fun findByCollaboratorId(collaboratorId: String): Collection<WorkLog> {
-        return workLogRepository.findByCollaboratorId(collaboratorId).map { getRealObject(it)!! }
+        return workLogRepository.findByCollaboratorId(collaboratorId).map { (it).convertToWorkLog() }
     }
 
     override fun findByIntervalId(intervalId: String): Collection<WorkLog> {
-        return workLogRepository.findByIntervalId(intervalId).map { getRealObject(it)!! }
+        return workLogRepository.findByIntervalId(intervalId).map { it.convertToWorkLog() }
     }
 
     override fun findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(
         intervalId: String, workStatus: WorkStatus
     ): Collection<WorkLog> {
         return workLogRepository.findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(intervalId, workStatus)
-            .map { getRealObject(it)!! }
+            .map { it.convertToWorkLog() }
     }
 
     override fun findByProjectId(projectId: String): Collection<WorkLog> {
-        return workLogRepository.findByProjectId(projectId).map { getRealObject(it)!! }
+        return workLogRepository.findByProjectId(projectId).map { it.convertToWorkLog() }
     }
 
     override fun findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(
         collaboratorId: String, workStatus: WorkStatus
     ): WorkLog? {
-        return getRealObject(
-            workLogRepository.findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(collaboratorId, workStatus)
-        )
+        return workLogRepository.findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(collaboratorId, workStatus)
+                ?.convertToWorkLog()
+
     }
 
     override fun findFirstByIntervalId(intervalId: String): WorkLog {
-        return getRealObject(workLogRepository.findFirstByIntervalId(intervalId))!!
+        return workLogRepository.findFirstByIntervalId(intervalId).convertToWorkLog()
     }
 
     override fun findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(
         intervalId: String, workStatus: WorkStatus
     ): WorkLog? {
-        return getRealObject(workLogRepository.findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(intervalId, workStatus))
+        return workLogRepository.findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(intervalId, workStatus)?.convertToWorkLog()
     }
-
-    private fun cloneWorkLog(workLog: WorkLog) =
-        WorkLogClone(
-            workLog.project,
-            workLog.collaborator,
-            workLog.timestamp,
-            workLog.workStatus,
-            workLog.intervalId,
-            workLog.description,
-            workLog.id
-             )
-
-    private fun getRealObject(workLogClone: WorkLogClone?): WorkLog? =
-        if (workLogClone != null)
-            WorkLog(
-                workLogClone.project,
-                workLogClone.collaborator,
-                workLogClone.timestamp,
-                workLogClone.workStatus,
-                workLogClone.intervalId,
-                workLogClone.description,
-                workLogClone.id)
-        else null
 
 }

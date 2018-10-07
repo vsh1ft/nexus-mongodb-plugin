@@ -4,11 +4,12 @@ import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.verify
 import lt.boldadmin.nexus.api.type.entity.Company
+import lt.boldadmin.nexus.api.type.entity.Customer
 import lt.boldadmin.nexus.api.type.entity.User
 import lt.boldadmin.nexus.api.type.valueobject.Address
 import lt.boldadmin.nexus.plugin.mongodb.adapter.UserRepositoryMongodbGatewayAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.UserRepository
-import lt.boldadmin.nexus.plugin.mongodb.type.entity.UserClone
+import lt.boldadmin.nexus.plugin.mongodb.clone.UserClone
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,6 +17,7 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import java.util.*
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @RunWith(MockitoJUnitRunner::class)
 class UserRepositoryMongodbGatewayAdapterTest {
@@ -55,14 +57,16 @@ class UserRepositoryMongodbGatewayAdapterTest {
 
         val actualUser = adapter.findByEmail(USER_EMAIL)
 
-        assertEquals(USER_ID, actualUser!!.id)
-        assertEquals(USER_NAME, actualUser.name)
-        assertEquals(USER_ADDRESS, actualUser.address)
-        assertEquals(USER_EMAIL, actualUser.email)
-        assertEquals(USER_COMPANY, actualUser.company)
-        assertEquals(USER_LAST_NAME, actualUser.lastName)
-        assertEquals(USER_PASSWORD, actualUser.password)
-        assertEquals(USER_ROLE, actualUser.role)
+        assertUserFieldsAreEqual(actualUser!!)
+    }
+
+    @Test
+    fun `Retrieves null if user does not exist by email`() {
+        doReturn(null).`when`(userRepositorySpy).findByEmail(USER_EMAIL)
+
+        val actualUser = adapter.findByEmail(USER_EMAIL)
+
+        assertNull(actualUser)
     }
 
     @Test
@@ -71,14 +75,7 @@ class UserRepositoryMongodbGatewayAdapterTest {
 
         val actualUser = adapter.findById(USER_ID)
 
-        assertEquals(USER_ID, actualUser.id)
-        assertEquals(USER_NAME, actualUser.name)
-        assertEquals(USER_ADDRESS, actualUser.address)
-        assertEquals(USER_EMAIL, actualUser.email)
-        assertEquals(USER_COMPANY, actualUser.company)
-        assertEquals(USER_LAST_NAME, actualUser.lastName)
-        assertEquals(USER_PASSWORD, actualUser.password)
-        assertEquals(USER_ROLE, actualUser.role)
+        assertUserFieldsAreEqual(actualUser)
     }
 
     @Test
@@ -88,14 +85,7 @@ class UserRepositoryMongodbGatewayAdapterTest {
 
         val actualUsers = adapter.findAll()
 
-        assertEquals(USER_ID, actualUsers.first().id)
-        assertEquals(USER_NAME, actualUsers.first().name)
-        assertEquals(USER_ADDRESS, actualUsers.first().address)
-        assertEquals(USER_EMAIL, actualUsers.first().email)
-        assertEquals(USER_COMPANY, actualUsers.first().company)
-        assertEquals(USER_LAST_NAME, actualUsers.first().lastName)
-        assertEquals(USER_PASSWORD, actualUsers.first().password)
-        assertEquals(USER_ROLE, actualUsers.first().role)
+        assertUserFieldsAreEqual(actualUsers.single())
     }
 
     @Test
@@ -105,16 +95,19 @@ class UserRepositoryMongodbGatewayAdapterTest {
 
         val actualUsers = adapter.findAll()
 
-        assertEquals(USER_ID, actualUsers.first().id)
-        assertEquals(USER_NAME, actualUsers.first().name)
-        assertEquals(USER_ADDRESS, actualUsers.first().address)
-        assertEquals(USER_EMAIL, actualUsers.first().email)
-        assertEquals(USER_COMPANY, actualUsers.first().company)
-        assertEquals(USER_LAST_NAME, actualUsers.first().lastName)
-        assertEquals(USER_PASSWORD, actualUsers.first().password)
-        assertEquals(USER_ROLE, actualUsers.first().role)
+        assertUserFieldsAreEqual(actualUsers.single())
     }
 
+    private fun assertUserFieldsAreEqual(actualUser: User) {
+        assertEquals(USER_ID, actualUser.id)
+        assertEquals(USER_NAME, actualUser.name)
+        assertEquals(USER_ADDRESS, actualUser.address)
+        assertEquals(USER_EMAIL, actualUser.email)
+        assertEquals(USER_COMPANY, actualUser.company)
+        assertEquals(USER_LAST_NAME, actualUser.lastName)
+        assertEquals(USER_PASSWORD, actualUser.password)
+        assertEquals(USER_ROLE, actualUser.role)
+    }
 
     private fun createUserClone() = UserClone().apply {
         id = USER_ID

@@ -8,7 +8,7 @@ import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.valueobject.Address
 import lt.boldadmin.nexus.plugin.mongodb.adapter.CustomerRepositoryMongodbGatewayAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.CustomerRepository
-import lt.boldadmin.nexus.plugin.mongodb.type.entity.CustomerClone
+import lt.boldadmin.nexus.plugin.mongodb.clone.CustomerClone
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -57,14 +57,7 @@ class CustomerRepositoryMongodbGatewayAdapterTest {
 
         val actualCustomer = adapter.findById(CUSTOMER_ID)
 
-        assertEquals(CUSTOMER_ID, actualCustomer.id)
-        assertEquals(CUSTOMER_NAME, actualCustomer.name)
-        assertEquals(CUSTOMER_ADDRESS, actualCustomer.address)
-        assertEquals(CUSTOMER_EMAIL, actualCustomer.email)
-        assertEquals(CUSTOMER_PROJECT, actualCustomer.projects.first())
-        assertEquals(ORGANIZATION_NUMBER, actualCustomer.organizationNumber)
-        assertEquals(CUSTOMER_MOBILE_NUMBER, actualCustomer.mobileNumber)
-        assertEquals(CUSTOMER_ORDER_NUMBER, actualCustomer.orderNumber)
+        assertCustomerFieldsAreEqual(actualCustomer)
     }
 
     @Test
@@ -75,14 +68,7 @@ class CustomerRepositoryMongodbGatewayAdapterTest {
 
         val actualCustomers = adapter.findByOrderNumberIsGreaterThanEqual(orderNumber)
 
-        assertEquals(CUSTOMER_ID, actualCustomers.first().id)
-        assertEquals(CUSTOMER_NAME, actualCustomers.first().name)
-        assertEquals(CUSTOMER_ADDRESS, actualCustomers.first().address)
-        assertEquals(CUSTOMER_EMAIL, actualCustomers.first().email)
-        assertEquals(CUSTOMER_PROJECT, actualCustomers.first().projects.first())
-        assertEquals(ORGANIZATION_NUMBER, actualCustomers.first().organizationNumber)
-        assertEquals(CUSTOMER_MOBILE_NUMBER, actualCustomers.first().mobileNumber)
-        assertEquals(CUSTOMER_ORDER_NUMBER, actualCustomers.first().orderNumber)
+        assertCustomerFieldsAreEqual(actualCustomers.single())
     }
 
     private fun createCustomerClone() = CustomerClone().apply {
@@ -105,6 +91,17 @@ class CustomerRepositoryMongodbGatewayAdapterTest {
         mobileNumber = CUSTOMER_MOBILE_NUMBER
         orderNumber = CUSTOMER_ORDER_NUMBER
         addProject(CUSTOMER_PROJECT)
+    }
+
+    private fun assertCustomerFieldsAreEqual(actualCustomer: Customer) {
+        assertEquals(CUSTOMER_ID, actualCustomer.id)
+        assertEquals(CUSTOMER_NAME, actualCustomer.name)
+        assertEquals(CUSTOMER_ADDRESS, actualCustomer.address)
+        assertEquals(CUSTOMER_EMAIL, actualCustomer.email)
+        assertEquals(CUSTOMER_PROJECT, actualCustomer.projects.first())
+        assertEquals(ORGANIZATION_NUMBER, actualCustomer.organizationNumber)
+        assertEquals(CUSTOMER_MOBILE_NUMBER, actualCustomer.mobileNumber)
+        assertEquals(CUSTOMER_ORDER_NUMBER, actualCustomer.orderNumber)
     }
 
     companion object {

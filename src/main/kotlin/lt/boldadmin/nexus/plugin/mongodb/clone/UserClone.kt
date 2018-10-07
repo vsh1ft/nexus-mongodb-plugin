@@ -1,8 +1,7 @@
-package lt.boldadmin.nexus.plugin.mongodb.type.entity
+package lt.boldadmin.nexus.plugin.mongodb.clone
 import lt.boldadmin.nexus.api.type.entity.*
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
-import javax.validation.constraints.Size
 
 @Document(collection = "user")
 class UserClone(
@@ -18,7 +17,7 @@ class UserClone(
 
 ) : Person() {
 
-    fun setClone(user: User) {
+    internal fun set(user: User) {
         this.apply {
             id = user.id
             name = user.name
@@ -31,7 +30,7 @@ class UserClone(
         }
     }
 
-    fun getRealObject() = User().apply {
+    internal fun convertToUser() = User().apply {
         id = this@UserClone.id
         name = this@UserClone.name
         email = this@UserClone.email

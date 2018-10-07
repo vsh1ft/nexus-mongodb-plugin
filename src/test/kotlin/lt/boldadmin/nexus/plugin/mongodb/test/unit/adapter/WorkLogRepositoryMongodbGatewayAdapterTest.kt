@@ -3,18 +3,17 @@ package lt.boldadmin.nexus.plugin.mongodb.test.unit.adapter
 import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.verify
-import lt.boldadmin.nexus.api.type.entity.Collaborator
-import lt.boldadmin.nexus.api.type.entity.Project
-import lt.boldadmin.nexus.api.type.entity.WorkLog
+import lt.boldadmin.nexus.api.type.entity.*
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.adapter.WorkLogRepositoryMongodbGatewayAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorkLogRepository
-import lt.boldadmin.nexus.plugin.mongodb.type.entity.WorkLogClone
+import lt.boldadmin.nexus.plugin.mongodb.clone.WorkLogClone
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -52,6 +51,16 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
 
     @Test
     fun `Retrieves real workLog object by id`() {
+        doReturn(Optional.of(createWorkLogClone())).`when`(workLogRepositorySpy).findById(WORK_LOG_ID)
+
+        val actualWorkLog = adapter.findById(WORK_LOG_ID)
+
+        assertWorkLogFieldsAreEqual(actualWorkLog)
+    }
+
+
+    @Test
+    fun `Confirms that workLog exist by id`() {
         doReturn(true).`when`(workLogRepositorySpy).existsByIntervalId(INTERVAL_ID)
 
         val exists = adapter.existsByIntervalId(INTERVAL_ID)
@@ -65,13 +74,7 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
 
         val actualWorkLogs = adapter.findByCollaboratorId(COLLABORATOR_ID)
 
-        assertEquals(PROJECT, actualWorkLogs.first().project)
-        assertEquals(COLLABORATOR, actualWorkLogs.first().collaborator)
-        assertEquals(TIMESTAMP, actualWorkLogs.first().timestamp)
-        assertEquals(WORK_STATUS, actualWorkLogs.first().workStatus)
-        assertEquals(INTERVAL_ID, actualWorkLogs.first().intervalId)
-        assertEquals(DESCRIPTION, actualWorkLogs.first().description)
-        assertEquals(WORK_LOG_ID, actualWorkLogs.first().id)
+        assertWorkLogFieldsAreEqual(actualWorkLogs.single())
     }
 
     @Test
@@ -80,13 +83,7 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
 
         val actualWorkLogs = adapter.findByIntervalId(INTERVAL_ID)
 
-        assertEquals(PROJECT, actualWorkLogs.first().project)
-        assertEquals(COLLABORATOR, actualWorkLogs.first().collaborator)
-        assertEquals(TIMESTAMP, actualWorkLogs.first().timestamp)
-        assertEquals(WORK_STATUS, actualWorkLogs.first().workStatus)
-        assertEquals(INTERVAL_ID, actualWorkLogs.first().intervalId)
-        assertEquals(DESCRIPTION, actualWorkLogs.first().description)
-        assertEquals(WORK_LOG_ID, actualWorkLogs.first().id)
+        assertWorkLogFieldsAreEqual(actualWorkLogs.single())
     }
 
     @Test
@@ -96,13 +93,7 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
 
         val actualWorkLogs = adapter.findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(INTERVAL_ID, WORK_STATUS)
 
-        assertEquals(PROJECT, actualWorkLogs.first().project)
-        assertEquals(COLLABORATOR, actualWorkLogs.first().collaborator)
-        assertEquals(TIMESTAMP, actualWorkLogs.first().timestamp)
-        assertEquals(WORK_STATUS, actualWorkLogs.first().workStatus)
-        assertEquals(INTERVAL_ID, actualWorkLogs.first().intervalId)
-        assertEquals(DESCRIPTION, actualWorkLogs.first().description)
-        assertEquals(WORK_LOG_ID, actualWorkLogs.first().id)
+        assertWorkLogFieldsAreEqual(actualWorkLogs.single())
     }
 
     @Test
@@ -112,13 +103,7 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
 
         val actualWorkLogs = adapter.findByProjectId(PROJECT_ID)
 
-        assertEquals(PROJECT, actualWorkLogs.first().project)
-        assertEquals(COLLABORATOR, actualWorkLogs.first().collaborator)
-        assertEquals(TIMESTAMP, actualWorkLogs.first().timestamp)
-        assertEquals(WORK_STATUS, actualWorkLogs.first().workStatus)
-        assertEquals(INTERVAL_ID, actualWorkLogs.first().intervalId)
-        assertEquals(DESCRIPTION, actualWorkLogs.first().description)
-        assertEquals(WORK_LOG_ID, actualWorkLogs.first().id)
+        assertWorkLogFieldsAreEqual(actualWorkLogs.single())
     }
 
     @Test
@@ -129,13 +114,7 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
         val actualWorkLog = adapter
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(COLLABORATOR_ID, WORK_STATUS)
 
-        assertEquals(PROJECT, actualWorkLog!!.project)
-        assertEquals(COLLABORATOR, actualWorkLog.collaborator)
-        assertEquals(TIMESTAMP, actualWorkLog.timestamp)
-        assertEquals(WORK_STATUS, actualWorkLog.workStatus)
-        assertEquals(INTERVAL_ID, actualWorkLog.intervalId)
-        assertEquals(DESCRIPTION, actualWorkLog.description)
-        assertEquals(WORK_LOG_ID, actualWorkLog.id)
+        assertWorkLogFieldsAreEqual(actualWorkLog!!)
     }
 
     @Test
@@ -155,13 +134,7 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
 
         val actualWorkLog = adapter.findFirstByIntervalId(INTERVAL_ID)
 
-        assertEquals(PROJECT, actualWorkLog.project)
-        assertEquals(COLLABORATOR, actualWorkLog.collaborator)
-        assertEquals(TIMESTAMP, actualWorkLog.timestamp)
-        assertEquals(WORK_STATUS, actualWorkLog.workStatus)
-        assertEquals(INTERVAL_ID, actualWorkLog.intervalId)
-        assertEquals(DESCRIPTION, actualWorkLog.description)
-        assertEquals(WORK_LOG_ID, actualWorkLog.id)
+        assertWorkLogFieldsAreEqual(actualWorkLog)
     }
 
     @Test
@@ -171,13 +144,7 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
 
         val actualWorkLog = adapter.findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(INTERVAL_ID, WORK_STATUS)
 
-        assertEquals(PROJECT, actualWorkLog!!.project)
-        assertEquals(COLLABORATOR, actualWorkLog.collaborator)
-        assertEquals(TIMESTAMP, actualWorkLog.timestamp)
-        assertEquals(WORK_STATUS, actualWorkLog.workStatus)
-        assertEquals(INTERVAL_ID, actualWorkLog.intervalId)
-        assertEquals(DESCRIPTION, actualWorkLog.description)
-        assertEquals(WORK_LOG_ID, actualWorkLog.id)
+        assertWorkLogFieldsAreEqual(actualWorkLog!!)
     }
 
     @Test
@@ -190,26 +157,23 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
         assertNull(actualWorkLog)
     }
 
-    private fun createWorkLogClone() =
-        WorkLogClone(
-            PROJECT,
-            COLLABORATOR,
-            TIMESTAMP,
-            WORK_STATUS,
-            INTERVAL_ID,
-            DESCRIPTION,
-            WORK_LOG_ID
-        )
+    private fun assertWorkLogFieldsAreEqual(actualWorkLog: WorkLog) {
+        assertEquals(PROJECT, actualWorkLog.project)
+        assertEquals(COLLABORATOR, actualWorkLog.collaborator)
+        assertEquals(TIMESTAMP, actualWorkLog.timestamp)
+        assertEquals(WORK_STATUS, actualWorkLog.workStatus)
+        assertEquals(INTERVAL_ID, actualWorkLog.intervalId)
+        assertEquals(DESCRIPTION, actualWorkLog.description)
+        assertEquals(WORK_LOG_ID, actualWorkLog.id)
+    }
 
-    fun createWorkLog() =
+    private fun createWorkLogClone() = WorkLogClone(
+        PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
+    )
+
+    private fun createWorkLog() =
         WorkLog(
-            PROJECT,
-            COLLABORATOR,
-            TIMESTAMP,
-            WORK_STATUS,
-            INTERVAL_ID,
-            DESCRIPTION,
-            WORK_LOG_ID
+            PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
         )
 
         companion object {

@@ -8,13 +8,15 @@ import lt.boldadmin.nexus.api.type.entity.Company
 import lt.boldadmin.nexus.api.type.entity.Customer
 import lt.boldadmin.nexus.plugin.mongodb.adapter.CompanyRepositoryMongodbGatewayAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.CompanyRepository
-import lt.boldadmin.nexus.plugin.mongodb.type.entity.CompanyClone
+import lt.boldadmin.nexus.plugin.mongodb.clone.CompanyClone
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @RunWith(MockitoJUnitRunner::class)
 
@@ -58,6 +60,15 @@ class CompanyRepositoryMongodbGatewayAdapterTest {
         assertEquals(companyClone.collaborators, actualCompany.collaborators)
     }
 
+    @Test
+    fun `Retrieves null if company doesn not exist by name`() {
+        doReturn(null).`when`(companyRepositorySpy).findByName(COMPANY_NAME)
+
+        val actualCompany = adapter.findByName(COMPANY_NAME)
+
+        assertNull(actualCompany)
+    }
+
     private fun createCompany() =
         Company().apply {
             id = COMPANY_ID
@@ -80,6 +91,5 @@ class CompanyRepositoryMongodbGatewayAdapterTest {
         private val CUSTOMERS = mutableListOf(Customer())
         private val COLLABORATORS = mutableListOf(Collaborator())
     }
-
 
 }

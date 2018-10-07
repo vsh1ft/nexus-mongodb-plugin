@@ -58,7 +58,6 @@ class ProjectRepositoryMongodbGatewayAdapterTest {
     }
 
     companion object {
-
         private val PROJECT_ID = "PROJECT_ID"
         private val PROJECT_NAME = "PROJECT_NAME"
 
@@ -68,4 +67,5 @@ class ProjectRepositoryMongodbGatewayAdapterTest {
             address = Address()
         }
     }
+
 }
