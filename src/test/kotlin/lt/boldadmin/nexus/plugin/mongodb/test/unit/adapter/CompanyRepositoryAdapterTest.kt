@@ -1,40 +1,41 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.adapter
 
-import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Company
 import lt.boldadmin.nexus.api.type.entity.Customer
-import lt.boldadmin.nexus.plugin.mongodb.adapter.CompanyRepositoryMongodbGatewayAdapter
+import lt.boldadmin.nexus.plugin.mongodb.adapter.CompanyRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.CompanyRepository
 import lt.boldadmin.nexus.plugin.mongodb.clone.CompanyClone
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @RunWith(MockitoJUnitRunner::class)
 
-class CompanyRepositoryMongodbGatewayAdapterTest {
+class CompanyRepositoryAdapterTest {
 
     @Mock
     private lateinit var companyRepositorySpy: CompanyRepository
 
-    private lateinit var adapter: CompanyRepositoryMongodbGatewayAdapter
+    private lateinit var adapter: CompanyRepositoryAdapter
 
     @Before
     fun setUp() {
-        adapter = CompanyRepositoryMongodbGatewayAdapter(companyRepositorySpy)
+        adapter = CompanyRepositoryAdapter(companyRepositorySpy)
     }
 
     @Test
     fun `Saves company as clone`() {
         val company = createCompany()
+        doAnswer { invocation ->
+            val user = invocation.arguments[0] as CompanyClone
+            user.apply { id = COMPANY_ID }
+        }.`when`(companyRepositorySpy).save<CompanyClone>(any())
 
         adapter.save(company)
 
@@ -48,7 +49,7 @@ class CompanyRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves real company object by name`() {
+    fun `Gets company by name`() {
         val companyClone = createCompanyClone()
         doReturn(companyClone).`when`(companyRepositorySpy).findByName(COMPANY_NAME)
 
@@ -61,7 +62,7 @@ class CompanyRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves null if company doesn not exist by name`() {
+    fun `Gets null if company doesn't exist by name`() {
         doReturn(null).`when`(companyRepositorySpy).findByName(COMPANY_NAME)
 
         val actualCompany = adapter.findByName(COMPANY_NAME)
@@ -71,7 +72,7 @@ class CompanyRepositoryMongodbGatewayAdapterTest {
 
     private fun createCompany() =
         Company().apply {
-            id = COMPANY_ID
+            id = null
             name = COMPANY_NAME
             customers = CUSTOMERS
             collaborators = COLLABORATORS

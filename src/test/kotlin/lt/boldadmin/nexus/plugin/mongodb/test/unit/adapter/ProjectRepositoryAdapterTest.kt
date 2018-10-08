@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.verify
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.valueobject.Address
-import lt.boldadmin.nexus.plugin.mongodb.adapter.ProjectRepositoryMongodbGatewayAdapter
+import lt.boldadmin.nexus.plugin.mongodb.adapter.ProjectRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.ProjectRepository
 import org.junit.Before
 import org.junit.Test
@@ -15,16 +15,16 @@ import java.util.*
 import kotlin.test.assertEquals
 
 @RunWith(MockitoJUnitRunner::class)
-class ProjectRepositoryMongodbGatewayAdapterTest {
+class ProjectRepositoryAdapterTest {
 
     @Mock
     private lateinit var projectRepositorySpy: ProjectRepository
 
-    private lateinit var adapter: ProjectRepositoryMongodbGatewayAdapter
+    private lateinit var adapter: ProjectRepositoryAdapter
 
     @Before
     fun setUp() {
-        adapter = ProjectRepositoryMongodbGatewayAdapter(projectRepositorySpy)
+        adapter = ProjectRepositoryAdapter(projectRepositorySpy)
     }
 
     @Test

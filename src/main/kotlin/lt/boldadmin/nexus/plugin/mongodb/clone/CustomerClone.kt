@@ -9,13 +9,13 @@ import java.util.*
 class CustomerClone(
 
     @DBRef(lazy = true)
-    val projects: HashSet<Project> = HashSet(),
+    internal val projects: HashSet<Project> = HashSet(),
 
-    var organizationNumber: String = "",
+    internal var organizationNumber: String = "",
 
-    var mobileNumber: String = "",
+    internal var mobileNumber: String = "",
 
-    var orderNumber: Short = 0
+    internal var orderNumber: Short = 0
 
 ) : Person() {
 
@@ -47,7 +47,7 @@ class CustomerClone(
         }
     }
 
-    fun addProject(project: Project) {
+    internal fun addProject(project: Project) {
         projects.add(project)
     }
 

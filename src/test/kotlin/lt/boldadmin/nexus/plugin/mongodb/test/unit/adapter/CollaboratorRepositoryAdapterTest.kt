@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.*
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.valueobject.Address
 import lt.boldadmin.nexus.api.type.valueobject.TimeRange
-import lt.boldadmin.nexus.plugin.mongodb.adapter.CollaboratorRepositoryMongodbGatewayAdapter
+import lt.boldadmin.nexus.plugin.mongodb.adapter.CollaboratorRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.CollaboratorRepository
 import org.junit.Before
 import org.junit.Test
@@ -16,16 +16,16 @@ import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
-class CollaboratorRepositoryMongodbGatewayAdapterTest {
+class CollaboratorRepositoryAdapterTest {
 
     @Mock
     private lateinit var collaboratorRepositorySpy: CollaboratorRepository
 
-    private lateinit var adapter: CollaboratorRepositoryMongodbGatewayAdapter
+    private lateinit var adapter: CollaboratorRepositoryAdapter
 
     @Before
     fun setUp() {
-        adapter = CollaboratorRepositoryMongodbGatewayAdapter(collaboratorRepositorySpy)
+        adapter = CollaboratorRepositoryAdapter(collaboratorRepositorySpy)
     }
 
     @Test
@@ -49,7 +49,7 @@ class CollaboratorRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Checks if collaborator exists by mobile number`() {
+    fun `Confirms that collaborator exists by mobile number`() {
         doReturn(true).`when`(collaboratorRepositorySpy).existsByMobileNumber(COLLABORATOR_NUMBER)
 
         val exists = adapter.existsByMobileNumber(COLLABORATOR_NUMBER)
@@ -58,7 +58,7 @@ class CollaboratorRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Checks if collaborator exists by id`() {
+    fun `Confirms that collaborator exists by id`() {
         doReturn(true).`when`(collaboratorRepositorySpy).existsById(COLLABORATOR_ID)
 
         val exists = adapter.existsById(COLLABORATOR_ID)

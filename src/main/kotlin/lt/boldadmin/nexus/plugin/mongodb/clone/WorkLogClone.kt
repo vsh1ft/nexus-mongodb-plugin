@@ -9,20 +9,20 @@ import org.springframework.data.mongodb.core.mapping.Document
 class WorkLogClone(
 
     @DBRef(lazy = true)
-    var project: Project = Project(),
+    internal var project: Project = Project(),
 
     @DBRef(lazy = true)
-    var collaborator: Collaborator = Collaborator(),
+    internal var collaborator: Collaborator = Collaborator(),
 
-    var timestamp: Long = 0,
+    internal var timestamp: Long = 0,
 
-    var workStatus: WorkStatus = WorkStatus.START,
+    internal var workStatus: WorkStatus = WorkStatus.START,
 
-    var intervalId: String = "",
+    internal var intervalId: String = "",
 
-    var description: String = "",
+    internal var description: String = "",
 
-    var id: String? = null
+    internal var id: String? = null
 ) {
 
     internal fun set(workLog: WorkLog) {

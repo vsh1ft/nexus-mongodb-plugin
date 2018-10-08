@@ -7,13 +7,13 @@ import org.springframework.data.mongodb.core.mapping.Document
 class UserClone(
 
     @DBRef(lazy = true)
-    var company: Company = Company(),
+    internal var company: Company = Company(),
 
-    var lastName: String = "",
+    internal var lastName: String = "",
 
-    var password: String = "",
+    internal var password: String = "",
 
-    var role: String = ""
+    internal var role: String = ""
 
 ) : Person() {
 

@@ -1,14 +1,12 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.adapter
 
-import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
 import lt.boldadmin.nexus.api.type.entity.Customer
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.valueobject.Address
-import lt.boldadmin.nexus.plugin.mongodb.adapter.CustomerRepositoryMongodbGatewayAdapter
-import lt.boldadmin.nexus.plugin.mongodb.repository.CustomerRepository
+import lt.boldadmin.nexus.plugin.mongodb.adapter.CustomerRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.clone.CustomerClone
+import lt.boldadmin.nexus.plugin.mongodb.repository.CustomerRepository
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,22 +16,26 @@ import java.util.*
 import kotlin.test.assertEquals
 
 @RunWith(MockitoJUnitRunner::class)
-class CustomerRepositoryMongodbGatewayAdapterTest {
+class CustomerRepositoryAdapterTest {
 
     @Mock
     private lateinit var customerRepositorySpy: CustomerRepository
 
-    private lateinit var adapter: CustomerRepositoryMongodbGatewayAdapter
+    private lateinit var adapter: CustomerRepositoryAdapter
 
     @Before
     fun setUp() {
-        adapter = CustomerRepositoryMongodbGatewayAdapter(customerRepositorySpy)
+        adapter = CustomerRepositoryAdapter(customerRepositorySpy)
     }
-
 
     @Test
     fun `Saves customer as clone`() {
         val customer = createCustomer()
+        doAnswer { invocation ->
+            val user = invocation.arguments[0] as CustomerClone
+            user.apply { id = CUSTOMER_ID }
+        }.`when`(customerRepositorySpy).save<CustomerClone>(any())
+
 
         adapter.save(customer)
 
@@ -51,7 +53,7 @@ class CustomerRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves real customer object by id`() {
+    fun `Gets customer by id`() {
         val customerClone = createCustomerClone()
         doReturn(Optional.of(customerClone)).`when`(customerRepositorySpy).findById(CUSTOMER_ID)
 
@@ -61,7 +63,7 @@ class CustomerRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves real customer object by order number`() {
+    fun `Retrieves customer by order number`() {
         val orderNumber: Short = 8
         val customerClone = createCustomerClone()
         doReturn(listOf(customerClone)).`when`(customerRepositorySpy).findByOrderNumberIsGreaterThanEqual(orderNumber)
@@ -83,7 +85,7 @@ class CustomerRepositoryMongodbGatewayAdapterTest {
     }
 
     private fun createCustomer() = Customer().apply {
-        id = CUSTOMER_ID
+        id = null
         name = CUSTOMER_NAME
         address = CUSTOMER_ADDRESS
         email = CUSTOMER_EMAIL

@@ -10,15 +10,15 @@ import java.util.*
 @Document(collection = "company")
 class CompanyClone(
 
-    var id: String? = null,
+    internal var id: String? = null,
 
-    var name: String = "",
-
-    @DBRef(lazy = true)
-    var customers: MutableCollection<Customer> = HashSet(),
+    internal var name: String = "",
 
     @DBRef(lazy = true)
-    var collaborators: MutableCollection<Collaborator> = HashSet()
+    internal var customers: MutableCollection<Customer> = HashSet(),
+
+    @DBRef(lazy = true)
+    internal var collaborators: MutableCollection<Collaborator> = HashSet()
 
 ) {
 

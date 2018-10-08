@@ -1,13 +1,10 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.adapter
 
-import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
 import lt.boldadmin.nexus.api.type.entity.Company
-import lt.boldadmin.nexus.api.type.entity.Customer
 import lt.boldadmin.nexus.api.type.entity.User
 import lt.boldadmin.nexus.api.type.valueobject.Address
-import lt.boldadmin.nexus.plugin.mongodb.adapter.UserRepositoryMongodbGatewayAdapter
+import lt.boldadmin.nexus.plugin.mongodb.adapter.UserRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.UserRepository
 import lt.boldadmin.nexus.plugin.mongodb.clone.UserClone
 import org.junit.Before
@@ -20,21 +17,25 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @RunWith(MockitoJUnitRunner::class)
-class UserRepositoryMongodbGatewayAdapterTest {
+class UserRepositoryAdapterTest {
 
     @Mock
     private lateinit var userRepositorySpy: UserRepository
 
-    private lateinit var adapter: UserRepositoryMongodbGatewayAdapter
+    private lateinit var adapter: UserRepositoryAdapter
 
     @Before
     fun setUp() {
-        adapter = UserRepositoryMongodbGatewayAdapter(userRepositorySpy)
+        adapter = UserRepositoryAdapter(userRepositorySpy)
     }
 
     @Test
     fun `Saves user as a clone`() {
         val user = createUser()
+        doAnswer { invocation ->
+            val userClone = invocation.arguments[0] as UserClone
+            userClone.apply { id = USER_ID }
+        }.`when`(userRepositorySpy).save<UserClone>(any())
 
         adapter.save(user)
 
@@ -52,7 +53,7 @@ class UserRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves real user object by email`() {
+    fun `Gets user by email`() {
         doReturn(createUserClone()).`when`(userRepositorySpy).findByEmail(USER_EMAIL)
 
         val actualUser = adapter.findByEmail(USER_EMAIL)
@@ -61,7 +62,7 @@ class UserRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves null if user does not exist by email`() {
+    fun `Gets null if user does not exist by email`() {
         doReturn(null).`when`(userRepositorySpy).findByEmail(USER_EMAIL)
 
         val actualUser = adapter.findByEmail(USER_EMAIL)
@@ -70,7 +71,7 @@ class UserRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves real user object by id`() {
+    fun `Gets user by id`() {
         doReturn(Optional.of(createUserClone())).`when`(userRepositorySpy).findById(USER_ID)
 
         val actualUser = adapter.findById(USER_ID)
@@ -79,7 +80,7 @@ class UserRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves all users as real objects`() {
+    fun `Gets all users`() {
         val userClones = listOf(createUserClone())
         doReturn(userClones).`when`(userRepositorySpy).findAll()
 
@@ -89,7 +90,7 @@ class UserRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Confirms that workLog exists by given interval id`() {
+    fun `Gets that workLog exists by given interval id`() {
         val userClones = listOf(createUserClone())
         doReturn(userClones).`when`(userRepositorySpy).findAll()
 
@@ -121,7 +122,7 @@ class UserRepositoryMongodbGatewayAdapterTest {
     }
 
     private fun createUser() = User().apply {
-        id = USER_ID
+        id = null
         name = USER_NAME
         address = USER_ADDRESS
         email = USER_EMAIL

@@ -1,11 +1,9 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.adapter
 
-import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
 import lt.boldadmin.nexus.api.type.entity.*
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
-import lt.boldadmin.nexus.plugin.mongodb.adapter.WorkLogRepositoryMongodbGatewayAdapter
+import lt.boldadmin.nexus.plugin.mongodb.adapter.WorkLogRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorkLogRepository
 import lt.boldadmin.nexus.plugin.mongodb.clone.WorkLogClone
 import org.junit.Before
@@ -19,21 +17,25 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
-class WorkLogRepositoryMongodbGatewayAdapterTest {
+class WorkLogRepositoryAdapterTest {
 
     @Mock
     private lateinit var workLogRepositorySpy: WorkLogRepository
 
-    private lateinit var adapter: WorkLogRepositoryMongodbGatewayAdapter
+    private lateinit var adapter: WorkLogRepositoryAdapter
 
     @Before
     fun setUp() {
-        adapter = WorkLogRepositoryMongodbGatewayAdapter(workLogRepositorySpy)
+        adapter = WorkLogRepositoryAdapter(workLogRepositorySpy)
     }
 
     @Test
     fun `Saves workLog as a clone`() {
         val workLog = createWorkLog()
+        doAnswer { invocation ->
+            val workLogClone = invocation.arguments[0] as WorkLogClone
+            workLogClone.apply { id = WORK_LOG_ID }
+        }.`when`(workLogRepositorySpy).save<WorkLogClone>(any())
 
         adapter.save(workLog)
 
@@ -50,7 +52,7 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves real workLog object by id`() {
+    fun `Gets workLog by id`() {
         doReturn(Optional.of(createWorkLogClone())).`when`(workLogRepositorySpy).findById(WORK_LOG_ID)
 
         val actualWorkLog = adapter.findById(WORK_LOG_ID)
@@ -69,7 +71,7 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves real workLogs by collaborator id`() {
+    fun `Gets workLogs by collaborator id`() {
         doReturn(listOf(createWorkLogClone())).`when`(workLogRepositorySpy).findByCollaboratorId(COLLABORATOR_ID)
 
         val actualWorkLogs = adapter.findByCollaboratorId(COLLABORATOR_ID)
@@ -78,7 +80,7 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves real workLogs by interval id`() {
+    fun `Gets workLogs by interval id`() {
         doReturn(listOf(createWorkLogClone())).`when`(workLogRepositorySpy).findByIntervalId(INTERVAL_ID)
 
         val actualWorkLogs = adapter.findByIntervalId(INTERVAL_ID)
@@ -87,17 +89,17 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves real workLogs by interval id and workStatus`() {
+    fun `Gets workLog interval endpoints`() {
         doReturn(listOf(createWorkLogClone())).`when`(workLogRepositorySpy)
             .findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(INTERVAL_ID, WORK_STATUS)
 
-        val actualWorkLogs = adapter.findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(INTERVAL_ID, WORK_STATUS)
+        val actualWorkLogs = adapter.findIntervalEndpointsAsc(INTERVAL_ID, WORK_STATUS)
 
         assertWorkLogFieldsAreEqual(actualWorkLogs.single())
     }
 
     @Test
-    fun `Retrieves real workLogs by project id`() {
+    fun `Gets workLogs by project id`() {
         doReturn(listOf(createWorkLogClone())).`when`(workLogRepositorySpy)
             .findByProjectId(PROJECT_ID)
 
@@ -107,29 +109,29 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves real latest interval endpoint object`() {
+    fun `Gets latest interval endpoint by collaborator id and status`() {
         doReturn(createWorkLogClone()).`when`(workLogRepositorySpy)
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(COLLABORATOR_ID, WORK_STATUS)
 
         val actualWorkLog = adapter
-            .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(COLLABORATOR_ID, WORK_STATUS)
+            .findLatestIntervalEnpointByCollaboratorId(COLLABORATOR_ID, WORK_STATUS)
 
         assertWorkLogFieldsAreEqual(actualWorkLog!!)
     }
 
     @Test
-    fun `Retrieves null if there is not latest interval endpoint`() {
+    fun `Gets null if there is not latest interval endpoint by collaborator id and status`() {
         doReturn(null).`when`(workLogRepositorySpy)
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(COLLABORATOR_ID, WORK_STATUS)
 
         val actualWorkLog = adapter
-            .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(COLLABORATOR_ID, WORK_STATUS)
+            .findLatestIntervalEnpointByCollaboratorId(COLLABORATOR_ID, WORK_STATUS)
 
         assertNull(actualWorkLog)
     }
 
     @Test
-    fun `Retrieves latest real workLog object by interval id`() {
+    fun `Gets latest workLog by interval id`() {
         doReturn(createWorkLogClone()).`when`(workLogRepositorySpy).findFirstByIntervalId(INTERVAL_ID)
 
         val actualWorkLog = adapter.findFirstByIntervalId(INTERVAL_ID)
@@ -138,21 +140,21 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
     }
 
     @Test
-    fun `Retrieves latest real workLog object by interval id and workStatus ordered`() {
+    fun `Gets latest workLog by interval id and workStatus`() {
         doReturn(createWorkLogClone()).`when`(workLogRepositorySpy)
             .findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(INTERVAL_ID, WORK_STATUS)
 
-        val actualWorkLog = adapter.findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(INTERVAL_ID, WORK_STATUS)
+        val actualWorkLog = adapter.findLatestIntervalEnpointByIntervalId(INTERVAL_ID, WORK_STATUS)
 
         assertWorkLogFieldsAreEqual(actualWorkLog!!)
     }
 
     @Test
-    fun `Retrieves null if there is no workLog by interval id and workStatus ordered`() {
+    fun `Gets null if there is no workLog by interval id and workStatus`() {
         doReturn(null).`when`(workLogRepositorySpy)
             .findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(INTERVAL_ID, WORK_STATUS)
 
-        val actualWorkLog = adapter.findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(INTERVAL_ID, WORK_STATUS)
+        val actualWorkLog = adapter.findLatestIntervalEnpointByIntervalId(INTERVAL_ID, WORK_STATUS)
 
         assertNull(actualWorkLog)
     }
@@ -173,7 +175,7 @@ class WorkLogRepositoryMongodbGatewayAdapterTest {
 
     private fun createWorkLog() =
         WorkLog(
-            PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
+            PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, null
         )
 
         companion object {
