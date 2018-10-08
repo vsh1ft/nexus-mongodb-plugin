@@ -63,7 +63,7 @@ class CustomerMongodbRepositoryAdapterTest {
     }
 
     @Test
-    fun `Retrieves customer by order number`() {
+    fun `Gets customers by order number`() {
         val orderNumber: Short = 8
         val customerClone = createCustomerClone()
         doReturn(listOf(customerClone)).`when`(customerMongodbRepositorySpy).findByOrderNumberIsGreaterThanEqual(orderNumber)

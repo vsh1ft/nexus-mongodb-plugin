@@ -37,7 +37,7 @@ class ProjectMongodbRepositoryAdapterTest {
     }
 
     @Test
-    fun `Finds project by id`() {
+    fun `Gets project by id`() {
         val expectedProject = Optional.of(createProject())
         doReturn(expectedProject).`when`(projectMongodbRepositorySpy).findById(PROJECT_ID)
 
@@ -47,7 +47,7 @@ class ProjectMongodbRepositoryAdapterTest {
     }
 
     @Test
-    fun `Finds by order number`() {
+    fun `Gets projects by order number`() {
         val orderNumber: Short = 5
         val expectedProjects = listOf(createProject())
         doReturn(expectedProjects).`when`(projectMongodbRepositorySpy).findByOrderNumberIsGreaterThanEqual(orderNumber)

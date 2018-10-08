@@ -39,7 +39,6 @@ class CollaboratorMongodbRepositoryAdapterTest {
         verify(collaboratorMongodbRepositorySpy).save(collaborator)
     }
 
-
     @Test
     fun `Gets collaborator by id`() {
         val expectedCollaborator = createCollaborator()

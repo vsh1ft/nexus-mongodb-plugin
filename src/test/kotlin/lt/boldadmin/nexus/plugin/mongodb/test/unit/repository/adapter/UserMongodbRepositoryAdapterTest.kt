@@ -62,7 +62,7 @@ class UserMongodbRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets null if user does not exist by email`() {
+    fun `Gets null if user doesn't exist by email`() {
         doReturn(null).`when`(userMongodbRepositorySpy).findByEmail(USER_EMAIL)
 
         val actualUser = adapter.findByEmail(USER_EMAIL)
@@ -81,16 +81,6 @@ class UserMongodbRepositoryAdapterTest {
 
     @Test
     fun `Gets all users`() {
-        val userClones = listOf(createUserClone())
-        doReturn(userClones).`when`(userMongodbRepositorySpy).findAll()
-
-        val actualUsers = adapter.findAll()
-
-        assertUserFieldsAreEqual(actualUsers.single())
-    }
-
-    @Test
-    fun `Gets that workLog exists by given interval id`() {
         val userClones = listOf(createUserClone())
         doReturn(userClones).`when`(userMongodbRepositorySpy).findAll()
 
