@@ -67,7 +67,7 @@ class WorkLogRepositoryAdapterTest {
 
         val exists = adapter.existsByIntervalId(INTERVAL_ID)
 
-       assertTrue(exists)
+        assertTrue(exists)
     }
 
     @Test
@@ -113,8 +113,7 @@ class WorkLogRepositoryAdapterTest {
         doReturn(createWorkLogClone()).`when`(workLogMongoRepositorySpy)
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(COLLABORATOR_ID, WORK_STATUS)
 
-        val actualWorkLog = adapter
-            .findLatestIntervalEnpointByCollaboratorId(COLLABORATOR_ID, WORK_STATUS)
+        val actualWorkLog = adapter.findLatestIntervalEnpointByCollaboratorId(COLLABORATOR_ID, WORK_STATUS)
 
         assertWorkLogFieldsAreEqual(actualWorkLog!!)
     }
@@ -124,8 +123,7 @@ class WorkLogRepositoryAdapterTest {
         doReturn(null).`when`(workLogMongoRepositorySpy)
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(COLLABORATOR_ID, WORK_STATUS)
 
-        val actualWorkLog = adapter
-            .findLatestIntervalEnpointByCollaboratorId(COLLABORATOR_ID, WORK_STATUS)
+        val actualWorkLog = adapter.findLatestIntervalEnpointByCollaboratorId(COLLABORATOR_ID, WORK_STATUS)
 
         assertNull(actualWorkLog)
     }
@@ -173,22 +171,21 @@ class WorkLogRepositoryAdapterTest {
         PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
     )
 
-    private fun createWorkLog() =
-        WorkLog(
-            PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, null
-        )
+    private fun createWorkLog() = WorkLog(
+        PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, null
+    )
 
-        companion object {
-            private val COLLABORATOR_ID = "COLLABORATOR_ID"
-            private val PROJECT_ID = "PROJECT_ID"
+    companion object {
+        private val COLLABORATOR_ID = "COLLABORATOR_ID"
+        private val PROJECT_ID = "PROJECT_ID"
 
-            private val PROJECT = Project().apply { id = PROJECT_ID }
-            private val COLLABORATOR = Collaborator().apply { id = COLLABORATOR_ID }
-            private val TIMESTAMP = 123456L
-            private val WORK_STATUS = WorkStatus.START
-            private val INTERVAL_ID = "1"
-            private val DESCRIPTION = "DESCRIPTION"
-            private val WORK_LOG_ID = "WORK_LOG_ID"
-        }
+        private val PROJECT = Project().apply { id = PROJECT_ID }
+        private val COLLABORATOR = Collaborator().apply { id = COLLABORATOR_ID }
+        private val TIMESTAMP = 123456L
+        private val WORK_STATUS = WorkStatus.START
+        private val INTERVAL_ID = "1"
+        private val DESCRIPTION = "DESCRIPTION"
+        private val WORK_LOG_ID = "WORK_LOG_ID"
+    }
 
 }

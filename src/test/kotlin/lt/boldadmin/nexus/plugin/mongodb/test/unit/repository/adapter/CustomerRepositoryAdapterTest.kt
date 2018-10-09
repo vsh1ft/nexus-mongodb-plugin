@@ -66,7 +66,8 @@ class CustomerRepositoryAdapterTest {
     fun `Gets customers by order number`() {
         val orderNumber: Short = 8
         val customerClone = createCustomerClone()
-        doReturn(listOf(customerClone)).`when`(customerMongoRepositorySpy).findByOrderNumberIsGreaterThanEqual(orderNumber)
+        doReturn(listOf(customerClone))
+            .`when`(customerMongoRepositorySpy).findByOrderNumberIsGreaterThanEqual(orderNumber)
 
         val actualCustomers = adapter.findByOrderNumberIsGreaterThanEqual(orderNumber)
 

@@ -44,10 +44,9 @@ class WorkLogTest {
         PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
     )
 
-    private fun createWorkLog() =
-        WorkLog(
-            PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
-        )
+    private fun createWorkLog() = WorkLog(
+        PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
+    )
 
     companion object {
         private val COLLABORATOR_ID = "COLLABORATOR_ID"

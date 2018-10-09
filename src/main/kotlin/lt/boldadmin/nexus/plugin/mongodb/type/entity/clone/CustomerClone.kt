@@ -17,7 +17,7 @@ class CustomerClone(
 
     internal var orderNumber: Short = 0
 
-) : Person() {
+): Person() {
 
     internal fun set(customer: Customer) {
         this.apply {

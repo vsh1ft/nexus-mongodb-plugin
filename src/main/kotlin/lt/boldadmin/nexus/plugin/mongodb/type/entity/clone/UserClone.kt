@@ -1,4 +1,5 @@
 package lt.boldadmin.nexus.plugin.mongodb.type.entity.clone
+
 import lt.boldadmin.nexus.api.type.entity.*
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
@@ -15,7 +16,7 @@ class UserClone(
 
     internal var role: String = ""
 
-) : Person() {
+): Person() {
 
     internal fun set(user: User) {
         this.apply {

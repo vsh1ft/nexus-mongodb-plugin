@@ -10,16 +10,13 @@ import kotlin.test.assertEquals
 
 class CountryRepositoryAdapterTest {
 
-
     @Test
     fun `Gets all countries`() {
         val countryMongoRepositorySpy: CountryMongoRepository = mock()
         val expectedCountries = listOf(Country("Lithuania"))
         doReturn(expectedCountries).`when`(countryMongoRepositorySpy).findAll()
 
-        val actualCountries = CountryRepositoryAdapter(
-            countryMongoRepositorySpy
-        ).findAll()
+        val actualCountries = CountryRepositoryAdapter(countryMongoRepositorySpy).findAll()
 
         assertEquals(expectedCountries, actualCountries)
     }

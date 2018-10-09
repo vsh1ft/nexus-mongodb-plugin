@@ -30,19 +30,19 @@ class WorkLogRepositoryAdapter(private val workLogMongoRepository: WorkLogMongoR
         workLogMongoRepository.findFirstByIntervalId(intervalId).get()
 
     override fun findIntervalEndpointsAsc(intervalId: String, workStatus: WorkStatus): Collection<WorkLog> =
-        workLogMongoRepository.findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(
-            intervalId, workStatus
-        ).map { it.get() }
+        workLogMongoRepository
+            .findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(intervalId, workStatus)
+            .map { it.get() }
 
     override fun findLatestIntervalEnpointByCollaboratorId(collaboratorId: String, workStatus: WorkStatus) =
-        workLogMongoRepository.findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(
-            collaboratorId, workStatus
-        )?.get()
+        workLogMongoRepository
+            .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(collaboratorId, workStatus)
+            ?.get()
 
     override fun findLatestIntervalEnpointByIntervalId(intervalId: String, workStatus: WorkStatus) =
-        workLogMongoRepository.findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(
-            intervalId, workStatus
-        )?.get()
+        workLogMongoRepository
+            .findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(intervalId, workStatus)
+            ?.get()
 
     override fun existsByIntervalId(intervalId: String) = workLogMongoRepository.existsByIntervalId(intervalId)
 

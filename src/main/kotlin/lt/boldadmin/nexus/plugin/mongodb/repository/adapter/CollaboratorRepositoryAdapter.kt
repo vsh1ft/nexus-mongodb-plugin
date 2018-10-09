@@ -22,6 +22,7 @@ class CollaboratorRepositoryAdapter(private val collaboratorMongoRepository: Col
 
     override fun existsById(id: String) = collaboratorMongoRepository.existsById(id)
 
-    override fun existsByMobileNumber(mobileNumber: String) = collaboratorMongoRepository.existsByMobileNumber(mobileNumber)
+    override fun existsByMobileNumber(mobileNumber: String) =
+        collaboratorMongoRepository.existsByMobileNumber(mobileNumber)
 
 }
