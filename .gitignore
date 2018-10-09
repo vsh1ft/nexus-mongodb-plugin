@@ -3,14 +3,6 @@
 *.iml
 out
 gen
-# Logs
-logs
-*.log
-
-# Runtime data
-pids
-*.pid
-*.seed
 
 # Gradle
 .gradle
