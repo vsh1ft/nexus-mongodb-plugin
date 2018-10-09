@@ -30,7 +30,7 @@ class UserClone(
         }
     }
 
-    internal fun convertToUser() = User().apply {
+    internal fun get() = User().apply {
         id = this@UserClone.id
         name = this@UserClone.name
         email = this@UserClone.email

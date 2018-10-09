@@ -37,6 +37,6 @@ class WorkLogClone(
         }
     }
 
-    internal fun convertToWorkLog() = WorkLog(project, collaborator, timestamp, workStatus, intervalId, description, id)
+    internal fun get() = WorkLog(project, collaborator, timestamp, workStatus, intervalId, description, id)
 
 }

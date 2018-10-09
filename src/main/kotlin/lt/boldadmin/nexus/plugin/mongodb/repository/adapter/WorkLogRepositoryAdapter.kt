@@ -9,35 +9,35 @@ import lt.boldadmin.nexus.plugin.mongodb.repository.WorkLogMongoRepository
 class WorkLogRepositoryAdapter(private val workLogMongoRepository: WorkLogMongoRepository): WorkLogRepository {
 
     override fun findByCollaboratorId(collaboratorId: String): Collection<WorkLog> =
-        workLogMongoRepository.findByCollaboratorId(collaboratorId).map { (it).convertToWorkLog() }
+        workLogMongoRepository.findByCollaboratorId(collaboratorId).map { (it).get() }
 
     override fun existsByIntervalId(intervalId: String) = workLogMongoRepository.existsByIntervalId(intervalId)
 
-    override fun findById(id: String) = workLogMongoRepository.findById(id).get().convertToWorkLog()
+    override fun findById(id: String) = workLogMongoRepository.findById(id).get().get()
 
     override fun findByIntervalId(intervalId: String): Collection<WorkLog> =
-        workLogMongoRepository.findByIntervalId(intervalId).map { it.convertToWorkLog() }
+        workLogMongoRepository.findByIntervalId(intervalId).map { it.get() }
 
     override fun findByProjectId(projectId: String): Collection<WorkLog> =
-        workLogMongoRepository.findByProjectId(projectId).map { it.convertToWorkLog() }
+        workLogMongoRepository.findByProjectId(projectId).map { it.get() }
 
     override fun findIntervalEndpointsAsc(intervalId: String, workStatus: WorkStatus): Collection<WorkLog> =
         workLogMongoRepository.findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(
             intervalId, workStatus
-        ).map { it.convertToWorkLog() }
+        ).map { it.get() }
 
     override fun findFirstByIntervalId(intervalId: String) =
-        workLogMongoRepository.findFirstByIntervalId(intervalId).convertToWorkLog()
+        workLogMongoRepository.findFirstByIntervalId(intervalId).get()
 
     override fun findLatestIntervalEnpointByCollaboratorId(collaboratorId: String, workStatus: WorkStatus) =
         workLogMongoRepository.findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(
             collaboratorId, workStatus
-        )?.convertToWorkLog()
+        )?.get()
 
     override fun findLatestIntervalEnpointByIntervalId(intervalId: String, workStatus: WorkStatus) =
         workLogMongoRepository.findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(
             intervalId, workStatus
-        )?.convertToWorkLog()
+        )?.get()
 
     override fun save(workLog: WorkLog) {
         val workLogClone = WorkLogClone().apply { set(workLog) }

@@ -7,12 +7,12 @@ import lt.boldadmin.nexus.plugin.mongodb.repository.CustomerMongoRepository
 
 class CustomerRepositoryAdapter(private val customerMongoRepository: CustomerMongoRepository): CustomerRepository {
 
-    override fun findById(id: String) = customerMongoRepository.findById(id).get().convertToCustomer()
+    override fun findById(id: String) = customerMongoRepository.findById(id).get().get()
 
     override fun findByOrderNumberIsGreaterThanEqual(orderNumber: Short): Collection<Customer> =
         customerMongoRepository
             .findByOrderNumberIsGreaterThanEqual(orderNumber)
-            .map { it.convertToCustomer() }
+            .map { it.get() }
 
     override fun save(customer: Customer) {
         val customerClone = CustomerClone().apply { set(customer) }

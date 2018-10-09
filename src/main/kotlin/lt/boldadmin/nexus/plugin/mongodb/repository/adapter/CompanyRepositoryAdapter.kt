@@ -7,7 +7,7 @@ import lt.boldadmin.nexus.plugin.mongodb.repository.CompanyMongoRepository
 
 class CompanyRepositoryAdapter(private val companyMongoRepository: CompanyMongoRepository): CompanyRepository {
 
-    override fun findByName(name: String) = companyMongoRepository.findByName(name)?.convertToCompany()
+    override fun findByName(name: String) = companyMongoRepository.findByName(name)?.get()
 
     override fun save(company: Company) {
         val companyClone = CompanyClone().apply { set(company) }

@@ -31,7 +31,7 @@ class CompanyClone(
         }
     }
 
-    internal fun convertToCompany() = Company().apply {
+    internal fun get() = Company().apply {
         id = this@CompanyClone.id
         name = this@CompanyClone.name
         customers = this@CompanyClone.customers

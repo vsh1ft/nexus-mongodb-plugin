@@ -29,7 +29,7 @@ class UserCloneTest {
     fun `Converts clone to User`() {
         val expectedUser = createUser()
 
-        val actualUser = createUserClone().convertToUser()
+        val actualUser = createUserClone().get()
 
         assertEquals(expectedUser.id, actualUser.id)
         assertEquals(expectedUser.name, actualUser.name)

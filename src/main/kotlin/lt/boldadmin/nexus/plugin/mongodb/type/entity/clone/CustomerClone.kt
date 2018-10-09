@@ -34,7 +34,7 @@ class CustomerClone(
         }
     }
 
-    internal fun convertToCustomer() = Customer().apply {
+    internal fun get() = Customer().apply {
         id = this@CustomerClone.id
         name = this@CustomerClone.name
         email = this@CustomerClone.email

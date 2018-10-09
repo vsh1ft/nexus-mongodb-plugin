@@ -29,7 +29,7 @@ class CustomerCloneTest {
     fun `Converts clone to Customer`() {
         val expectedCustomer = createCustomer()
 
-        val actualCustomer = createCustomerClone().convertToCustomer()
+        val actualCustomer = createCustomerClone().get()
 
         assertEquals(expectedCustomer.id, actualCustomer.id)
         assertEquals(expectedCustomer.name, actualCustomer.name)

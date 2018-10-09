@@ -29,7 +29,7 @@ class WorkLogTest {
     fun `Converts clone to User`() {
         val expectedUser = createWorkLog()
 
-        val actualUser = createWorkLogClone().convertToWorkLog()
+        val actualUser = createWorkLogClone().get()
 
         assertEquals(expectedUser.project, actualUser.project)
         assertEquals(expectedUser.collaborator, actualUser.collaborator)

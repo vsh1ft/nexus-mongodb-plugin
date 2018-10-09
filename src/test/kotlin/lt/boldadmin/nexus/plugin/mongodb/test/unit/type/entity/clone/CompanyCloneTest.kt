@@ -25,7 +25,7 @@ class CompanyCloneTest{
     fun `Converts clone to Company`() {
         val expectedCompany = createCompany()
 
-        val actualCompany = createCompanyClone().convertToCompany()
+        val actualCompany = createCompanyClone().get()
 
         assertEquals(expectedCompany.id, actualCompany.id)
         assertEquals(expectedCompany.name, actualCompany.name)
