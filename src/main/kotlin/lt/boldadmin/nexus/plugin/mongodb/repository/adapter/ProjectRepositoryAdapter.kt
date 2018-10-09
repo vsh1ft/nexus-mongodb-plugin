@@ -6,13 +6,13 @@ import lt.boldadmin.nexus.plugin.mongodb.repository.ProjectMongoRepository
 
 class ProjectRepositoryAdapter(private val projectMongoRepository: ProjectMongoRepository): ProjectRepository {
 
+    override fun save(project: Project) {
+        projectMongoRepository.save(project)
+    }
+
     override fun findById(id: String) = projectMongoRepository.findById(id).get()
 
     override fun findByOrderNumberIsGreaterThanEqual(orderNumber: Short): Collection<Project> =
         projectMongoRepository.findByOrderNumberIsGreaterThanEqual(orderNumber)
-
-    override fun save(project: Project) {
-        projectMongoRepository.save(project)
-    }
 
 }

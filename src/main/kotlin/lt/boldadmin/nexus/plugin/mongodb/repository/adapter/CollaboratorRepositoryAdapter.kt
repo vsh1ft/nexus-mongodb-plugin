@@ -7,9 +7,9 @@ import lt.boldadmin.nexus.plugin.mongodb.repository.CollaboratorMongoRepository
 class CollaboratorRepositoryAdapter(private val collaboratorMongoRepository: CollaboratorMongoRepository):
     CollaboratorRepository {
 
-    override fun existsById(id: String) = collaboratorMongoRepository.existsById(id)
-
-    override fun existsByMobileNumber(mobileNumber: String) = collaboratorMongoRepository.existsByMobileNumber(mobileNumber)
+    override fun save(collaborator: Collaborator) {
+        collaboratorMongoRepository.save(collaborator)
+    }
 
     override fun findAll(): Collection<Collaborator> = collaboratorMongoRepository.findAll()
 
@@ -20,8 +20,8 @@ class CollaboratorRepositoryAdapter(private val collaboratorMongoRepository: Col
     override fun findByOrderNumberIsGreaterThanEqual(orderNumber: Short): Collection<Collaborator> =
         collaboratorMongoRepository.findByOrderNumberIsGreaterThanEqual(orderNumber)
 
-    override fun save(collaborator: Collaborator) {
-        collaboratorMongoRepository.save(collaborator)
-    }
+    override fun existsById(id: String) = collaboratorMongoRepository.existsById(id)
+
+    override fun existsByMobileNumber(mobileNumber: String) = collaboratorMongoRepository.existsByMobileNumber(mobileNumber)
 
 }
