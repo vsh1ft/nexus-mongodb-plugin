@@ -4,7 +4,7 @@ import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorkLogClone
 import org.springframework.data.mongodb.repository.MongoRepository
 
-interface WorkLogMongodbRepository : MongoRepository<WorkLogClone, String> {
+interface WorkLogMongoRepository : MongoRepository<WorkLogClone, String> {
     fun findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(collaboratorId: String, workStatus: WorkStatus)
         : WorkLogClone?
 

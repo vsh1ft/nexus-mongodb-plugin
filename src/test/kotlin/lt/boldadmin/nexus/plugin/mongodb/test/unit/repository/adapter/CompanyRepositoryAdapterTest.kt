@@ -5,7 +5,7 @@ import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Company
 import lt.boldadmin.nexus.api.type.entity.Customer
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.CompanyRepositoryAdapter
-import lt.boldadmin.nexus.plugin.mongodb.repository.CompanyMongodbRepository
+import lt.boldadmin.nexus.plugin.mongodb.repository.CompanyMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.CompanyClone
 import org.junit.Before
 import org.junit.Test
@@ -17,16 +17,16 @@ import kotlin.test.assertNull
 
 @RunWith(MockitoJUnitRunner::class)
 
-class CompanyMongodbRepositoryAdapterTest {
+class CompanyRepositoryAdapterTest {
 
     @Mock
-    private lateinit var companyMongodbRepositorySpy: CompanyMongodbRepository
+    private lateinit var companyMongoRepositorySpy: CompanyMongoRepository
 
     private lateinit var adapter: CompanyRepositoryAdapter
 
     @Before
     fun setUp() {
-        adapter = CompanyRepositoryAdapter(companyMongodbRepositorySpy)
+        adapter = CompanyRepositoryAdapter(companyMongoRepositorySpy)
     }
 
     @Test
@@ -35,12 +35,12 @@ class CompanyMongodbRepositoryAdapterTest {
         doAnswer { invocation ->
             val user = invocation.arguments[0] as CompanyClone
             user.apply { id = COMPANY_ID }
-        }.`when`(companyMongodbRepositorySpy).save<CompanyClone>(any())
+        }.`when`(companyMongoRepositorySpy).save<CompanyClone>(any())
 
         adapter.save(company)
 
         argumentCaptor<CompanyClone>().apply {
-            verify(companyMongodbRepositorySpy).save(capture())
+            verify(companyMongoRepositorySpy).save(capture())
             assertEquals(COMPANY_ID, firstValue.id)
             assertEquals(COMPANY_NAME, firstValue.name)
             assertEquals(CUSTOMERS, firstValue.customers)
@@ -51,7 +51,7 @@ class CompanyMongodbRepositoryAdapterTest {
     @Test
     fun `Gets company by name`() {
         val companyClone = createCompanyClone()
-        doReturn(companyClone).`when`(companyMongodbRepositorySpy).findByName(COMPANY_NAME)
+        doReturn(companyClone).`when`(companyMongoRepositorySpy).findByName(COMPANY_NAME)
 
         val actualCompany = adapter.findByName(COMPANY_NAME)
 
@@ -63,7 +63,7 @@ class CompanyMongodbRepositoryAdapterTest {
 
     @Test
     fun `Gets null if company doesn't exist by name`() {
-        doReturn(null).`when`(companyMongodbRepositorySpy).findByName(COMPANY_NAME)
+        doReturn(null).`when`(companyMongoRepositorySpy).findByName(COMPANY_NAME)
 
         val actualCompany = adapter.findByName(COMPANY_NAME)
 

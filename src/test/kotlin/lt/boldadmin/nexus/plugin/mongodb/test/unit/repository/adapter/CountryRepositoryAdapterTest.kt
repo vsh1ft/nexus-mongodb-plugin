@@ -4,21 +4,21 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import lt.boldadmin.nexus.api.type.valueobject.Country
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.CountryRepositoryAdapter
-import lt.boldadmin.nexus.plugin.mongodb.repository.CountryMongodbRepository
+import lt.boldadmin.nexus.plugin.mongodb.repository.CountryMongoRepository
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class CountryMongodbRepositoryAdapterTest {
+class CountryRepositoryAdapterTest {
 
 
     @Test
     fun `Gets all countries`() {
-        val countryMongodbRepositorySpy: CountryMongodbRepository = mock()
+        val countryMongoRepositorySpy: CountryMongoRepository = mock()
         val expectedCountries = listOf(Country("Lithuania"))
-        doReturn(expectedCountries).`when`(countryMongodbRepositorySpy).findAll()
+        doReturn(expectedCountries).`when`(countryMongoRepositorySpy).findAll()
 
         val actualCountries = CountryRepositoryAdapter(
-            countryMongodbRepositorySpy
+            countryMongoRepositorySpy
         ).findAll()
 
         assertEquals(expectedCountries, actualCountries)

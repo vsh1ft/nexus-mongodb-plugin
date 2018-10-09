@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.verify
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.valueobject.Address
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.ProjectRepositoryAdapter
-import lt.boldadmin.nexus.plugin.mongodb.repository.ProjectMongodbRepository
+import lt.boldadmin.nexus.plugin.mongodb.repository.ProjectMongoRepository
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,16 +15,16 @@ import java.util.*
 import kotlin.test.assertEquals
 
 @RunWith(MockitoJUnitRunner::class)
-class ProjectMongodbRepositoryAdapterTest {
+class ProjectRepositoryAdapterTest {
 
     @Mock
-    private lateinit var projectMongodbRepositorySpy: ProjectMongodbRepository
+    private lateinit var projectMongoRepositorySpy: ProjectMongoRepository
 
     private lateinit var adapter: ProjectRepositoryAdapter
 
     @Before
     fun setUp() {
-        adapter = ProjectRepositoryAdapter(projectMongodbRepositorySpy)
+        adapter = ProjectRepositoryAdapter(projectMongoRepositorySpy)
     }
 
     @Test
@@ -33,13 +33,13 @@ class ProjectMongodbRepositoryAdapterTest {
 
         adapter.save(project)
 
-        verify(projectMongodbRepositorySpy).save(project)
+        verify(projectMongoRepositorySpy).save(project)
     }
 
     @Test
     fun `Gets project by id`() {
         val expectedProject = Optional.of(createProject())
-        doReturn(expectedProject).`when`(projectMongodbRepositorySpy).findById(PROJECT_ID)
+        doReturn(expectedProject).`when`(projectMongoRepositorySpy).findById(PROJECT_ID)
 
         val actualProject = adapter.findById(PROJECT_ID)
 
@@ -50,7 +50,7 @@ class ProjectMongodbRepositoryAdapterTest {
     fun `Gets projects by order number`() {
         val orderNumber: Short = 5
         val expectedProjects = listOf(createProject())
-        doReturn(expectedProjects).`when`(projectMongodbRepositorySpy).findByOrderNumberIsGreaterThanEqual(orderNumber)
+        doReturn(expectedProjects).`when`(projectMongoRepositorySpy).findByOrderNumberIsGreaterThanEqual(orderNumber)
 
         val actualProjects = adapter.findByOrderNumberIsGreaterThanEqual(orderNumber)
 

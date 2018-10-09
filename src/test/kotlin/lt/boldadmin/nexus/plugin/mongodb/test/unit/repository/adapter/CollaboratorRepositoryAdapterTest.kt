@@ -5,7 +5,7 @@ import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.valueobject.Address
 import lt.boldadmin.nexus.api.type.valueobject.TimeRange
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.CollaboratorRepositoryAdapter
-import lt.boldadmin.nexus.plugin.mongodb.repository.CollaboratorMongodbRepository
+import lt.boldadmin.nexus.plugin.mongodb.repository.CollaboratorMongoRepository
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,18 +16,16 @@ import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
-class CollaboratorMongodbRepositoryAdapterTest {
+class CollaboratorRepositoryAdapterTest {
 
     @Mock
-    private lateinit var collaboratorMongodbRepositorySpy: CollaboratorMongodbRepository
+    private lateinit var collaboratorMongoRepositorySpy: CollaboratorMongoRepository
 
     private lateinit var adapter: CollaboratorRepositoryAdapter
 
     @Before
     fun setUp() {
-        adapter = CollaboratorRepositoryAdapter(
-            collaboratorMongodbRepositorySpy
-        )
+        adapter = CollaboratorRepositoryAdapter(collaboratorMongoRepositorySpy)
     }
 
     @Test
@@ -36,13 +34,13 @@ class CollaboratorMongodbRepositoryAdapterTest {
 
         adapter.save(collaborator)
 
-        verify(collaboratorMongodbRepositorySpy).save(collaborator)
+        verify(collaboratorMongoRepositorySpy).save(collaborator)
     }
 
     @Test
     fun `Gets collaborator by id`() {
         val expectedCollaborator = createCollaborator()
-        doReturn(Optional.of(expectedCollaborator)).`when`(collaboratorMongodbRepositorySpy).findById(COLLABORATOR_ID)
+        doReturn(Optional.of(expectedCollaborator)).`when`(collaboratorMongoRepositorySpy).findById(COLLABORATOR_ID)
 
         val actualCollaborator = adapter.findById(COLLABORATOR_ID)
 
@@ -51,7 +49,7 @@ class CollaboratorMongodbRepositoryAdapterTest {
 
     @Test
     fun `Confirms that collaborator exists by mobile number`() {
-        doReturn(true).`when`(collaboratorMongodbRepositorySpy).existsByMobileNumber(COLLABORATOR_NUMBER)
+        doReturn(true).`when`(collaboratorMongoRepositorySpy).existsByMobileNumber(COLLABORATOR_NUMBER)
 
         val exists = adapter.existsByMobileNumber(COLLABORATOR_NUMBER)
 
@@ -60,7 +58,7 @@ class CollaboratorMongodbRepositoryAdapterTest {
 
     @Test
     fun `Confirms that collaborator exists by id`() {
-        doReturn(true).`when`(collaboratorMongodbRepositorySpy).existsById(COLLABORATOR_ID)
+        doReturn(true).`when`(collaboratorMongoRepositorySpy).existsById(COLLABORATOR_ID)
 
         val exists = adapter.existsById(COLLABORATOR_ID)
 
@@ -70,7 +68,7 @@ class CollaboratorMongodbRepositoryAdapterTest {
     @Test
     fun `Gets collaborator by mobile number`() {
         val expectedCollaborator = createCollaborator()
-        doReturn(expectedCollaborator).`when`(collaboratorMongodbRepositorySpy).findByMobileNumber(COLLABORATOR_NUMBER)
+        doReturn(expectedCollaborator).`when`(collaboratorMongoRepositorySpy).findByMobileNumber(COLLABORATOR_NUMBER)
 
         val actualCollaborator = adapter.findByMobileNumber(COLLABORATOR_NUMBER)
 
@@ -80,7 +78,7 @@ class CollaboratorMongodbRepositoryAdapterTest {
     @Test
     fun `Gets all collaborators`() {
         val expectedCollaborators = listOf(createCollaborator())
-        doReturn(expectedCollaborators).`when`(collaboratorMongodbRepositorySpy).findAll()
+        doReturn(expectedCollaborators).`when`(collaboratorMongoRepositorySpy).findAll()
 
         val actualCollaborators = adapter.findAll()
 
@@ -90,7 +88,7 @@ class CollaboratorMongodbRepositoryAdapterTest {
     @Test
     fun `Finds collaborators by order number`() {
         val expectedCollaborators = listOf(createCollaborator())
-        doReturn(expectedCollaborators).`when`(collaboratorMongodbRepositorySpy).findByOrderNumberIsGreaterThanEqual(5)
+        doReturn(expectedCollaborators).`when`(collaboratorMongoRepositorySpy).findByOrderNumberIsGreaterThanEqual(5)
 
         val actualCollaborators = adapter.findByOrderNumberIsGreaterThanEqual(5)
 
