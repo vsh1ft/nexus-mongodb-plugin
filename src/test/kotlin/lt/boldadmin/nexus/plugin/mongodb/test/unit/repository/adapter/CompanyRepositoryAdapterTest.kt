@@ -16,7 +16,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @RunWith(MockitoJUnitRunner::class)
-
 class CompanyRepositoryAdapterTest {
 
     @Mock
