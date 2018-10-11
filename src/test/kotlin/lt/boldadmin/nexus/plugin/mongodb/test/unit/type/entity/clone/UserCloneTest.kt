@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 class UserCloneTest {
 
     @Test
-    fun `Sets clone`() {
+    fun `Sets user clone`() {
         val expectedClone = createUserClone()
 
         val actualClone = UserClone().apply { set(createUser()) }

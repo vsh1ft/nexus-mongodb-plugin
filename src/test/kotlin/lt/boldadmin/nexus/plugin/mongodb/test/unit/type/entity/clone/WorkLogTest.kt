@@ -11,7 +11,7 @@ import kotlin.test.assertEquals
 class WorkLogTest {
 
     @Test
-    fun `Sets clone`() {
+    fun `Sets worklog clone`() {
         val expectedClone = createWorkLogClone()
 
         val actualClone = WorkLogClone().apply { set(createWorkLog()) }
