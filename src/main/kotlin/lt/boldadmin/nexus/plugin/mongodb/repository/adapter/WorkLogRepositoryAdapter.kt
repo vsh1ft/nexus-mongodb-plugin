@@ -29,12 +29,12 @@ class WorkLogRepositoryAdapter(private val workLogMongoRepository: WorkLogMongoR
     override fun findFirstByIntervalId(intervalId: String) =
         workLogMongoRepository.findFirstByIntervalId(intervalId).get()
 
-   override fun findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(intervalId: String, workStatus: WorkStatus): Collection<WorkLog> =
+   override fun findByIntervalIdAndWorkStatusNotOrderByLatest(intervalId: String, workStatus: WorkStatus): Collection<WorkLog> =
         workLogMongoRepository
             .findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(intervalId, workStatus)
             .map { it.get() }
 
-    override fun findLatestByCollaboratorIdAndNotWorkStatus(collaboratorId: String, workStatus: WorkStatus) =
+    override fun findLatestByCollaboratorIdAndWorkStatusNot(collaboratorId: String, workStatus: WorkStatus) =
         workLogMongoRepository
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(collaboratorId, workStatus)
             ?.get()

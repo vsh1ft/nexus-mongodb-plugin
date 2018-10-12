@@ -89,11 +89,11 @@ class WorkLogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets workLog by interval id and not work status ordered by ascending timestamp`() {
+    fun `Gets workLog by interval id and not by work status ordered by ascending timestamp`() {
         doReturn(listOf(createWorkLogClone())).`when`(workLogMongoRepositorySpy)
             .findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(INTERVAL_ID, WORK_STATUS)
 
-        val actualWorkLogs = adapter.findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(INTERVAL_ID, WORK_STATUS)
+        val actualWorkLogs = adapter.findByIntervalIdAndWorkStatusNotOrderByLatest(INTERVAL_ID, WORK_STATUS)
 
         assertWorkLogFieldsAreEqual(actualWorkLogs.single())
     }
@@ -109,11 +109,11 @@ class WorkLogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets latest worklog by collaborator id and not work status`() {
+    fun `Gets latest worklog by collaborator id and not by work status`() {
         doReturn(createWorkLogClone()).`when`(workLogMongoRepositorySpy)
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(COLLABORATOR_ID, WORK_STATUS)
 
-        val actualWorkLog = adapter.findLatestByCollaboratorIdAndNotWorkStatus(COLLABORATOR_ID, WORK_STATUS)
+        val actualWorkLog = adapter.findLatestByCollaboratorIdAndWorkStatusNot(COLLABORATOR_ID, WORK_STATUS)
 
         assertWorkLogFieldsAreEqual(actualWorkLog!!)
     }
@@ -123,7 +123,7 @@ class WorkLogRepositoryAdapterTest {
         doReturn(null).`when`(workLogMongoRepositorySpy)
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(COLLABORATOR_ID, WORK_STATUS)
 
-        val actualWorkLog = adapter.findLatestByCollaboratorIdAndNotWorkStatus(COLLABORATOR_ID, WORK_STATUS)
+        val actualWorkLog = adapter.findLatestByCollaboratorIdAndWorkStatusNot(COLLABORATOR_ID, WORK_STATUS)
 
         assertNull(actualWorkLog)
     }
