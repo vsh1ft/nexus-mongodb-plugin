@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository
 interface CollaboratorMongoRepository : MongoRepository<Collaborator, String> {
     fun findByOrderNumberIsGreaterThanEqual(orderNumber: Short): Collection<Collaborator>
 
-    fun findFirstByMobileNumber(mobileNumber: String): Collection<Collaborator>
+    fun findFirstByMobileNumber(mobileNumber: String): Collaborator
 
     fun existsByMobileNumber(mobileNumber: String): Boolean
 }
