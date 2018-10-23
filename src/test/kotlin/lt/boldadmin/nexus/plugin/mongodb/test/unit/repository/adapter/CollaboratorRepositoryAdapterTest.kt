@@ -68,13 +68,12 @@ class CollaboratorRepositoryAdapterTest {
 
     @Test
     fun `Gets collaborator by mobile number`() {
-        val expectedCollaborators = listOf(createCollaborator())
-        doReturn(expectedCollaborators).`when`(collaboratorMongoRepositorySpy)
-            .findFirstByMobileNumber(COLLABORATOR_NUMBER)
+        val expectedCollaborator = createCollaborator()
+        doReturn(expectedCollaborator).`when`(collaboratorMongoRepositorySpy).findByMobileNumber(COLLABORATOR_NUMBER)
 
-        val actualCollaborators = adapter.findFirstByMobileNumber(COLLABORATOR_NUMBER)
+        val actualCollaborator = adapter.findByMobileNumber(COLLABORATOR_NUMBER)
 
-        assertSame(expectedCollaborators, actualCollaborators)
+        assertSame(expectedCollaborator, actualCollaborator)
     }
 
     @Test
