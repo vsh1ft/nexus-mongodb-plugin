@@ -1,11 +1,12 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.verify
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.valueobject.Address
 import lt.boldadmin.nexus.api.type.valueobject.TimeRange
-import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.CollaboratorRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.CollaboratorMongoRepository
+import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.CollaboratorRepositoryAdapter
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -67,12 +68,13 @@ class CollaboratorRepositoryAdapterTest {
 
     @Test
     fun `Gets collaborator by mobile number`() {
-        val expectedCollaborator = createCollaborator()
-        doReturn(expectedCollaborator).`when`(collaboratorMongoRepositorySpy).findByMobileNumber(COLLABORATOR_NUMBER)
+        val expectedCollaborators = listOf(createCollaborator())
+        doReturn(expectedCollaborators).`when`(collaboratorMongoRepositorySpy)
+            .findFirstByMobileNumber(COLLABORATOR_NUMBER)
 
-        val actualCollaborator = adapter.findByMobileNumber(COLLABORATOR_NUMBER)
+        val actualCollaborators = adapter.findFirstByMobileNumber(COLLABORATOR_NUMBER)
 
-        assertSame(expectedCollaborator, actualCollaborator)
+        assertSame(expectedCollaborators, actualCollaborators)
     }
 
     @Test

@@ -15,7 +15,8 @@ class CollaboratorRepositoryAdapter(private val collaboratorMongoRepository: Col
 
     override fun findById(id: String) = collaboratorMongoRepository.findById(id).get()
 
-    override fun findByMobileNumber(mobileNumber: String) = collaboratorMongoRepository.findByMobileNumber(mobileNumber)
+    override fun findFirstByMobileNumber(mobileNumber: String) = collaboratorMongoRepository
+        .findFirstByMobileNumber(mobileNumber)
 
     override fun findByOrderNumberIsGreaterThanEqual(orderNumber: Short): Collection<Collaborator> =
         collaboratorMongoRepository.findByOrderNumberIsGreaterThanEqual(orderNumber)
