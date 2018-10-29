@@ -2,7 +2,7 @@ package lt.boldadmin.nexus.plugin.mongodb.test.unit.type.entity.clone
 
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Project
-import lt.boldadmin.nexus.api.type.entity.WorkLog
+import lt.boldadmin.nexus.api.type.entity.Worklog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorkLogClone
 import org.junit.Test
@@ -44,7 +44,7 @@ class WorkLogTest {
         PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
     )
 
-    private fun createWorkLog() = WorkLog(
+    private fun createWorkLog() = Worklog(
         PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
     )
 

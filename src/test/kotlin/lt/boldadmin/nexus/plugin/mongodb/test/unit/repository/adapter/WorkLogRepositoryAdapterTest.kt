@@ -3,6 +3,7 @@ package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 import com.nhaarman.mockito_kotlin.*
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Project
+import lt.boldadmin.nexus.api.type.entity.Worklog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.WorkLogRepositoryAdapter
@@ -158,7 +159,7 @@ class WorkLogRepositoryAdapterTest {
         assertNull(actualWorkLog)
     }
 
-    private fun assertWorkLogFieldsAreEqual(actualWorkLog: WorkLog) {
+    private fun assertWorkLogFieldsAreEqual(actualWorkLog: Worklog) {
         assertEquals(PROJECT, actualWorkLog.project)
         assertEquals(COLLABORATOR, actualWorkLog.collaborator)
         assertEquals(TIMESTAMP, actualWorkLog.timestamp)
@@ -172,7 +173,7 @@ class WorkLogRepositoryAdapterTest {
         PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
     )
 
-    private fun createWorkLog() = WorkLog(
+    private fun createWorkLog() = Worklog(
         PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, null
     )
 
