@@ -1,6 +1,8 @@
 package lt.boldadmin.nexus.plugin.mongodb.type.entity.clone
 
-import lt.boldadmin.nexus.api.type.entity.*
+import lt.boldadmin.nexus.api.type.entity.Collaborator
+import lt.boldadmin.nexus.api.type.entity.Project
+import lt.boldadmin.nexus.api.type.entity.Worklog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
@@ -25,18 +27,18 @@ class WorkLogClone(
     internal var id: String? = null
 ) {
 
-    internal fun set(workLog: WorkLog) {
+    internal fun set(worklog: Worklog) {
         this.apply {
-            project = workLog.project
-            collaborator = workLog.collaborator
-            timestamp = workLog.timestamp
-            workStatus = workLog.workStatus
-            intervalId = workLog.intervalId
-            description = workLog.description
-            id = workLog.id
+            project = worklog.project
+            collaborator = worklog.collaborator
+            timestamp = worklog.timestamp
+            workStatus = worklog.workStatus
+            intervalId = worklog.intervalId
+            description = worklog.description
+            id = worklog.id
         }
     }
 
-    internal fun get() = WorkLog(project, collaborator, timestamp, workStatus, intervalId, description, id)
+    internal fun get() = Worklog(project, collaborator, timestamp, workStatus, intervalId, description, id)
 
 }

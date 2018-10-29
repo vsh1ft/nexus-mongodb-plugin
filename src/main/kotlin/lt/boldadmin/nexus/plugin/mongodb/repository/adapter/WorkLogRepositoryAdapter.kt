@@ -1,49 +1,50 @@
 package lt.boldadmin.nexus.plugin.mongodb.repository.adapter
 
-import lt.boldadmin.nexus.api.repository.WorkLogRepository
-import lt.boldadmin.nexus.api.type.entity.WorkLog
+import lt.boldadmin.nexus.api.repository.WorklogRepository
+import lt.boldadmin.nexus.api.type.entity.Worklog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
+import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorkLogClone
-import lt.boldadmin.nexus.plugin.mongodb.repository.WorkLogMongoRepository
 
-class WorkLogRepositoryAdapter(private val workLogMongoRepository: WorkLogMongoRepository): WorkLogRepository {
+class WorkLogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoRepository): WorklogRepository {
 
-    override fun save(workLog: WorkLog) {
-        val workLogClone = WorkLogClone().apply { set(workLog) }
-        workLogMongoRepository.save(workLogClone)
+    override fun save(worklog: Worklog) {
+        val workLogClone = WorkLogClone().apply { set(worklog) }
+        worklogMongoRepository.save(workLogClone)
 
-        workLog.id = workLogClone.id
+        worklog.id = workLogClone.id
     }
 
-    override fun findById(id: String) = workLogMongoRepository.findById(id).get().get()
+    override fun findById(id: String) = worklogMongoRepository.findById(id).get().get()
 
-    override fun findByProjectId(projectId: String): Collection<WorkLog> =
-        workLogMongoRepository.findByProjectId(projectId).map { it.get() }
+    override fun findByProjectId(projectId: String): Collection<Worklog> =
+        worklogMongoRepository.findByProjectId(projectId).map { it.get() }
 
-    override fun findByIntervalId(intervalId: String): Collection<WorkLog> =
-        workLogMongoRepository.findByIntervalId(intervalId).map { it.get() }
+    override fun findByIntervalId(intervalId: String): Collection<Worklog> =
+        worklogMongoRepository.findByIntervalId(intervalId).map { it.get() }
 
-    override fun findByCollaboratorId(collaboratorId: String): Collection<WorkLog> =
-        workLogMongoRepository.findByCollaboratorId(collaboratorId).map { (it).get() }
+    override fun findByCollaboratorId(collaboratorId: String): Collection<Worklog> =
+        worklogMongoRepository.findByCollaboratorId(collaboratorId).map { (it).get() }
 
     override fun findFirstByIntervalId(intervalId: String) =
-        workLogMongoRepository.findFirstByIntervalId(intervalId).get()
+        worklogMongoRepository.findFirstByIntervalId(intervalId).get()
 
-   override fun findByIntervalIdAndWorkStatusNotOrderByLatest(intervalId: String, workStatus: WorkStatus): Collection<WorkLog> =
-        workLogMongoRepository
+   override fun findByIntervalIdAndWorkStatusNotOrderByLatest(intervalId: String, workStatus: WorkStatus):
+       Collection<Worklog> =
+        worklogMongoRepository
             .findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(intervalId, workStatus)
             .map { it.get() }
 
     override fun findLatestByCollaboratorIdAndWorkStatusNot(collaboratorId: String, workStatus: WorkStatus) =
-        workLogMongoRepository
+        worklogMongoRepository
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(collaboratorId, workStatus)
             ?.get()
 
     override fun findLatestByIntervalIdAndWorkStatus(intervalId: String, workStatus: WorkStatus) =
-        workLogMongoRepository
+        worklogMongoRepository
             .findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(intervalId, workStatus)
             ?.get()
 
-    override fun existsByIntervalId(intervalId: String) = workLogMongoRepository.existsByIntervalId(intervalId)
+    override fun existsByIntervalId(intervalId: String) = worklogMongoRepository.existsByIntervalId(intervalId)
 
 }
