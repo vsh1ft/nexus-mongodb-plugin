@@ -1,6 +1,7 @@
 package lt.boldadmin.nexus.plugin.mongodb.repository.adapter
 
 import lt.boldadmin.nexus.api.repository.WorklogRepository
+import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Worklog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
@@ -29,8 +30,8 @@ class WorkLogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoR
     override fun findFirstByIntervalId(intervalId: String) =
         worklogMongoRepository.findFirstByIntervalId(intervalId).get()
 
-   override fun findByIntervalIdAndWorkStatusNotOrderByLatest(intervalId: String, workStatus: WorkStatus):
-       Collection<Worklog> =
+    override fun findByIntervalIdAndWorkStatusNotOrderByLatest(intervalId: String, workStatus: WorkStatus):
+        Collection<Worklog> =
         worklogMongoRepository
             .findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(intervalId, workStatus)
             .map { it.get() }
@@ -45,6 +46,26 @@ class WorkLogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoR
             .findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(intervalId, workStatus)
             ?.get()
 
+    override fun findWorkingCollaboratorsByProjectId(projectId: String): Collection<Collaborator> {
+        return findByDistinctCollaboratorIdAndProjectId(projectId)
+            .filter { !hasWorkEnded(it.collaborator.id!!) }
+            .map { it.collaborator }
+    }
+
     override fun existsByIntervalId(intervalId: String) = worklogMongoRepository.existsByIntervalId(intervalId)
+
+    internal fun hasWorkEnded(collaboratorId: String): Boolean {
+        val workLog = getLatestIntervalEndpoint(collaboratorId)
+        return workLog!!.workStatus == WorkStatus.END
+    }
+
+    internal fun findByDistinctCollaboratorIdAndProjectId(projectId: String) =
+        findByProjectId(projectId)
+            .distinctBy { worklog -> worklog.collaborator.id }
+
+    private fun getLatestIntervalEndpoint(collaboratorId: String) =
+        findLatestByCollaboratorIdAndWorkStatusNot(
+            collaboratorId, WorkStatus.DESCRIPTION_UPDATE
+        )
 
 }
