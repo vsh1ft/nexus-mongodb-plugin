@@ -38,11 +38,21 @@ class CollaboratorInspectionLinkRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets inspection link`() {
+    fun `Gets inspectionLink by id`() {
         val expectedInspectionLink = createInspectionLink()
         doReturn(Optional.of(expectedInspectionLink)).`when`(repositorySpy).findById(ID)
 
         val actualInspectionLink = adapter.findById(ID)
+
+        assertSame(expectedInspectionLink, actualInspectionLink)
+    }
+
+    @Test
+    fun `Gets inspectionLink by link`() {
+        val expectedInspectionLink = createInspectionLink()
+        doReturn(expectedInspectionLink).`when`(repositorySpy).findByLink(LINK)
+
+        val actualInspectionLink = adapter.findByLink(LINK)
 
         assertSame(expectedInspectionLink, actualInspectionLink)
     }

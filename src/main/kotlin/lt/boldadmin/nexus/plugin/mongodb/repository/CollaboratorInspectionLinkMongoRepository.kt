@@ -7,4 +7,6 @@ interface CollaboratorInspectionLinkMongoRepository: MongoRepository<Collaborato
 
     fun existsByLink(link: String): Boolean
 
+    fun findByLink(link: String): CollaboratorInspectionLink
+
 }
