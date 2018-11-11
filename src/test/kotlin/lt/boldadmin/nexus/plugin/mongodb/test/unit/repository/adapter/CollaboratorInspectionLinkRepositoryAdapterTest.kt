@@ -48,10 +48,19 @@ class CollaboratorInspectionLinkRepositoryAdapterTest {
     }
 
     @Test
-    fun `Confirms that inspection link exists by id`() {
+    fun `Confirms that inspection link exists by link`() {
         doReturn(true).`when`(repositorySpy).existsByLink(LINK)
 
         val exists = adapter.existsByLink(LINK)
+
+        assertTrue(exists)
+    }
+
+    @Test
+    fun `Confirms that inspection link exists by id`() {
+        doReturn(true).`when`(repositorySpy).existsById(ID)
+
+        val exists = adapter.existsById(ID)
 
         assertTrue(exists)
     }
@@ -62,6 +71,7 @@ class CollaboratorInspectionLinkRepositoryAdapterTest {
 
         verify(repositorySpy).deleteById(ID)
     }
+
 
     companion object {
         private val ID = "17bd6e82c95af430"

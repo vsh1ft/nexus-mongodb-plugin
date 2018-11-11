@@ -7,6 +7,8 @@ import lt.boldadmin.nexus.plugin.mongodb.repository.CollaboratorInspectionLinkMo
 class CollaboratorInspectionLinkRepositoryAdapter (private val repository: CollaboratorInspectionLinkMongoRepository):
     CollaboratorInspectionLinkRepository {
 
+    override fun existsById(id: String) = repository.existsById(id)
+
     override fun deleteById(id: String) {
         repository.deleteById(id)
     }
