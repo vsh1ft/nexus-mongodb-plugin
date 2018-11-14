@@ -160,50 +160,12 @@ class WorkLogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets distinct worklogs by collaborator and by projectId`() {
-        val expectedWorklog = createWorkLogClone()
-        val anotherExpectedWorkLog = createWorkLogClone(createCollaborator("new"))
+    fun `Confirms that worklog exists by project id and collaborator id`() {
+        doReturn(true).`when`(worklogMongoRepositorySpy).existsByProjectIdAndCollaboratorId(PROJECT_ID, COLLABORATOR_ID)
 
-        doReturn(listOf(expectedWorklog, anotherExpectedWorkLog, createWorkLogClone()))
-            .`when`(worklogMongoRepositorySpy).findByProjectId(PROJECT_ID)
+        val exists = adapter.existsByProjectIdAndCollaboratorId(PROJECT_ID, COLLABORATOR_ID)
 
-        val actualWorklogs = adapter.findByDistinctCollaboratorIdAndProjectId(PROJECT_ID)
-
-        assertEquals(expectedWorklog.get().id, actualWorklogs[0].id)
-        assertEquals(anotherExpectedWorkLog.get().id, actualWorklogs[1].id)
-        assertEquals(2, actualWorklogs.size)
-    }
-
-    @Test
-    fun `Confirms that collaborator is not working`() {
-        doReturn(createWorkLogClone(workStatus = WorkStatus.END))
-            .`when`(worklogMongoRepositorySpy)
-            .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(
-                COLLABORATOR_ID,
-                WorkStatus.DESCRIPTION_UPDATE
-            )
-        val isNotWorking = adapter.hasWorkEnded(COLLABORATOR_ID)
-
-        assertTrue(isNotWorking)
-    }
-
-    @Test
-    fun `Gets working collaborators by project id`() {
-        val startedWorklog = createWorkLogClone()
-        val endedWorklog = createWorkLogClone(createCollaborator("new"), WorkStatus.END)
-        doReturn(listOf(startedWorklog, endedWorklog)).`when`(worklogMongoRepositorySpy).findByProjectId(PROJECT_ID)
-        doReturn(startedWorklog).`when`(worklogMongoRepositorySpy)
-            .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(
-                COLLABORATOR_ID,
-                WorkStatus.DESCRIPTION_UPDATE
-            )
-        doReturn(endedWorklog).`when`(worklogMongoRepositorySpy)
-            .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc("new", WorkStatus.DESCRIPTION_UPDATE)
-
-        val actualCollaborators = adapter.findWorkingCollaboratorsByProjectId(PROJECT_ID)
-
-        assertEquals(startedWorklog.collaborator.id, actualCollaborators.first().id)
-        assertEquals(1, actualCollaborators.size)
+        assertTrue(exists)
     }
 
     private fun assertWorkLogFieldsAreEqual(actualWorkLog: Worklog) {

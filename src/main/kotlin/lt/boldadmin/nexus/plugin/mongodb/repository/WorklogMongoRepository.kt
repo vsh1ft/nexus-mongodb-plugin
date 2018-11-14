@@ -16,6 +16,8 @@ interface WorklogMongoRepository : MongoRepository<WorkLogClone, String> {
 
     fun findByIntervalId(intervalId: String): Collection<WorkLogClone>
 
+    fun existsByProjectIdAndCollaboratorId(projectId: String, collaboratorId: String): Boolean
+
     fun findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(intervalId: String, workStatus: WorkStatus)
         : Collection<WorkLogClone>
 
