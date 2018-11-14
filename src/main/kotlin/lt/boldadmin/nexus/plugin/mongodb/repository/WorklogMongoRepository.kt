@@ -12,11 +12,7 @@ interface WorklogMongoRepository : MongoRepository<WorkLogClone, String> {
 
     fun findByProjectId(projectId: String): Collection<WorkLogClone>
 
-    fun existsByIntervalId(intervalId: String): Boolean
-
     fun findByIntervalId(intervalId: String): Collection<WorkLogClone>
-
-    fun existsByProjectIdAndCollaboratorId(projectId: String, collaboratorId: String): Boolean
 
     fun findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(intervalId: String, workStatus: WorkStatus)
         : Collection<WorkLogClone>
@@ -24,4 +20,9 @@ interface WorklogMongoRepository : MongoRepository<WorkLogClone, String> {
     fun findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(intervalId: String, workStatus: WorkStatus): WorkLogClone?
 
     fun findFirstByIntervalId(intervalId: String): WorkLogClone
+
+    fun existsByIntervalId(intervalId: String): Boolean
+
+    fun existsByProjectIdAndCollaboratorId(projectId: String, collaboratorId: String): Boolean
+
 }
