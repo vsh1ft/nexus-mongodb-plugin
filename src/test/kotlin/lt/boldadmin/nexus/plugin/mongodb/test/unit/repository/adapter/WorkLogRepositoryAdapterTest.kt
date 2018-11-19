@@ -159,6 +159,15 @@ class WorkLogRepositoryAdapterTest {
         assertNull(actualWorkLog)
     }
 
+    @Test
+    fun `Confirms that worklog exists by project id and collaborator id`() {
+        doReturn(true).`when`(worklogMongoRepositorySpy).existsByProjectIdAndCollaboratorId(PROJECT_ID, COLLABORATOR_ID)
+
+        val exists = adapter.existsByProjectIdAndCollaboratorId(PROJECT_ID, COLLABORATOR_ID)
+
+        assertTrue(exists)
+    }
+
     private fun assertWorkLogFieldsAreEqual(actualWorkLog: Worklog) {
         assertEquals(PROJECT, actualWorkLog.project)
         assertEquals(COLLABORATOR, actualWorkLog.collaborator)
@@ -169,10 +178,6 @@ class WorkLogRepositoryAdapterTest {
         assertEquals(WORK_LOG_ID, actualWorkLog.id)
     }
 
-    private fun createWorkLogClone() = WorkLogClone(
-        PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
-    )
-
     private fun createWorkLog() = Worklog(
         PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, null
     )
@@ -181,13 +186,27 @@ class WorkLogRepositoryAdapterTest {
         private val COLLABORATOR_ID = "COLLABORATOR_ID"
         private val PROJECT_ID = "PROJECT_ID"
 
-        private val PROJECT = Project().apply { id = PROJECT_ID }
-        private val COLLABORATOR = Collaborator().apply { id = COLLABORATOR_ID }
+        private val PROJECT = createProject()
+        private val COLLABORATOR = createCollaborator()
         private val TIMESTAMP = 123456L
         private val WORK_STATUS = WorkStatus.START
         private val INTERVAL_ID = "1"
         private val DESCRIPTION = "DESCRIPTION"
         private val WORK_LOG_ID = "WORK_LOG_ID"
+
+        private fun createWorkLogClone(
+            collaborator: Collaborator = COLLABORATOR,
+            workStatus: WorkStatus = WORK_STATUS,
+            project: Project = PROJECT
+        ) = WorkLogClone(
+            project, collaborator, TIMESTAMP, workStatus, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
+        )
+
+        private fun createProject(projectId: String = PROJECT_ID) = Project().apply { this.id = projectId }
+
+        private fun createCollaborator(id: String = COLLABORATOR_ID) =
+            Collaborator().apply { this.id = id }
+
     }
 
 }

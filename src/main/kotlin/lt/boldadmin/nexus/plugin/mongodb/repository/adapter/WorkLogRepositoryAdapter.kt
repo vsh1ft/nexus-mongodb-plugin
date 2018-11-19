@@ -1,12 +1,15 @@
 package lt.boldadmin.nexus.plugin.mongodb.repository.adapter
 
 import lt.boldadmin.nexus.api.repository.WorklogRepository
+import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Worklog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorkLogClone
 
 class WorkLogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoRepository): WorklogRepository {
+    override fun existsByProjectIdAndCollaboratorId(projectId: String, collaboratorId: String) =
+        worklogMongoRepository.existsByProjectIdAndCollaboratorId(projectId, collaboratorId)
 
     override fun save(worklog: Worklog) {
         val workLogClone = WorkLogClone().apply { set(worklog) }
@@ -29,8 +32,8 @@ class WorkLogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoR
     override fun findFirstByIntervalId(intervalId: String) =
         worklogMongoRepository.findFirstByIntervalId(intervalId).get()
 
-   override fun findByIntervalIdAndWorkStatusNotOrderByLatest(intervalId: String, workStatus: WorkStatus):
-       Collection<Worklog> =
+    override fun findByIntervalIdAndWorkStatusNotOrderByLatest(intervalId: String, workStatus: WorkStatus):
+        Collection<Worklog> =
         worklogMongoRepository
             .findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(intervalId, workStatus)
             .map { it.get() }
@@ -46,5 +49,6 @@ class WorkLogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoR
             ?.get()
 
     override fun existsByIntervalId(intervalId: String) = worklogMongoRepository.existsByIntervalId(intervalId)
+
 
 }
