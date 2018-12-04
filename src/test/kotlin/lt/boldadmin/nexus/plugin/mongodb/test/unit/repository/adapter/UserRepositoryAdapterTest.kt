@@ -208,7 +208,7 @@ class UserRepositoryAdapterTest {
         val user = TypeFactory().createUserClone()
         doReturn(Optional.of(user)).`when`(userMongoRepositorySpy).findById(USER_ID)
 
-        val projects = adapter.findProjectByUserId(USER_ID)
+        val projects = adapter.findProjectsByUserId(USER_ID)
 
         assertEquals(1, projects.size)
         assertEquals(PROJECT_NAME, projects.first().name)
