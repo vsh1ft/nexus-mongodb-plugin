@@ -185,10 +185,12 @@ class UserRepositoryAdapterTest {
 
     @Test
     fun `Project name is unique among User Projects`() {
-        val userClone = TypeFactory().createUserClone()
+        val userClone = TypeFactory().createUserClone().apply {
+            this.company.customers.first().addProject(Project("other id", PROJECT_NAME))
+        }
         doReturn(Optional.of(userClone)).`when`(userMongoRepositorySpy).findById(USER_ID)
 
-        val isProjectNameUnique = adapter.isProjectNameUnique("other project name", PROJECT_ID, USER_ID)
+        val isProjectNameUnique = adapter.isProjectNameUnique("new name", PROJECT_ID, USER_ID)
 
         assertTrue(isProjectNameUnique)
     }
