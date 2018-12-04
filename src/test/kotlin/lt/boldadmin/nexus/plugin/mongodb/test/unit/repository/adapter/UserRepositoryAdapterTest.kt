@@ -5,10 +5,11 @@ import lt.boldadmin.nexus.api.type.entity.*
 import lt.boldadmin.nexus.api.type.valueobject.Address
 import lt.boldadmin.nexus.api.type.valueobject.Country
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
-import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.UserMongoRepository
+import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.UserClone
-import org.junit.*
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
@@ -118,10 +119,7 @@ class UserRepositoryAdapterTest {
     fun `User has project when ids match`() {
         doReturn(Optional.of(TypeFactory().createUserClone())).`when`(userMongoRepositorySpy).findById(USER_ID)
 
-        val doesUserHaveProject = adapter.doesUserHaveProject(
-            USER_ID,
-            PROJECT_ID
-        )
+        val doesUserHaveProject = adapter.doesUserHaveProject(USER_ID, PROJECT_ID)
 
         assertTrue(doesUserHaveProject)
     }
