@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(collection = "workLog")
-class WorkLogClone(
+class WorklogClone(
 
     @DBRef(lazy = true)
     internal var project: Project = Project(),

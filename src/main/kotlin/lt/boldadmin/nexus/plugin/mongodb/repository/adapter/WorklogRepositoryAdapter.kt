@@ -1,21 +1,21 @@
 package lt.boldadmin.nexus.plugin.mongodb.repository.adapter
 
 import lt.boldadmin.nexus.api.repository.WorklogRepository
-import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Worklog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
-import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorkLogClone
+import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 
-class WorkLogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoRepository): WorklogRepository {
+class WorklogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoRepository,
+                               private val userRepositoryAdapter: UserRepositoryAdapter): WorklogRepository {
     override fun existsByProjectIdAndCollaboratorId(projectId: String, collaboratorId: String) =
         worklogMongoRepository.existsByProjectIdAndCollaboratorId(projectId, collaboratorId)
 
     override fun save(worklog: Worklog) {
-        val workLogClone = WorkLogClone().apply { set(worklog) }
-        worklogMongoRepository.save(workLogClone)
+        val worklogClone = WorklogClone().apply { set(worklog) }
+        worklogMongoRepository.save(worklogClone)
 
-        worklog.id = workLogClone.id
+        worklog.id = worklogClone.id
     }
 
     override fun findById(id: String) = worklogMongoRepository.findById(id).get().get()
@@ -49,6 +49,15 @@ class WorkLogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoR
             ?.get()
 
     override fun existsByIntervalId(intervalId: String) = worklogMongoRepository.existsByIntervalId(intervalId)
+
+    override fun doesUserHaveWorklogInterval(userId: String, intervalId: String) =
+        findByIntervalId(intervalId).all { userRepositoryAdapter.doesUserHaveWorklog(userId, it) }
+
+    override fun doesCollaboratorHaveWorklogInterval(collaboratorId: String, intervalId: String) =
+        findByIntervalId(intervalId).all { it.collaborator.id == collaboratorId }
+
+    override fun doesCollaboratorHaveWorklogIntervals(collaboratorId: String, intervalIds: Collection<String>) =
+        intervalIds.all { doesCollaboratorHaveWorklogInterval(collaboratorId, it) }
 
 
 }
