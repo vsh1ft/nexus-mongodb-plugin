@@ -335,19 +335,6 @@ class UserRepositoryAdapterTest {
             role = USER_ROLE
         }
 
-        fun createWorklog(worklogId: String = "", workStatus: WorkStatus = WorkStatus.START) = Worklog(
-            createProject(),
-            createCollaborator(),
-            0, workStatus, INTERVAL_ID, "", worklogId
-        )
-
-        private fun createProject() = Project(
-            PROJECT_ID, PROJECT_NAME,
-            PROJECT_ADDRESS
-        )
-
-        private fun createCollaborator() = Collaborator().apply { id = COLLABORATOR_ID }
-
         private fun createCompany() = Company().apply {
             id = COMPANY_ID
             addCustomer(createCustomer(CUSTOMER_ID, createProject()))
@@ -358,6 +345,20 @@ class UserRepositoryAdapterTest {
             id = customerId
             addProject(project)
         }
+
+        private fun createProject() = Project(
+            PROJECT_ID, PROJECT_NAME,
+            PROJECT_ADDRESS
+        )
+
+        private fun createCollaborator() = Collaborator().apply { id = COLLABORATOR_ID }
+
+        fun createWorklog(worklogId: String = "", workStatus: WorkStatus = WorkStatus.START) = Worklog(
+            createProject(),
+            createCollaborator(),
+            0, workStatus, INTERVAL_ID, "", worklogId
+        )
+
     }
 
 }

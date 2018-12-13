@@ -7,7 +7,7 @@ import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Document(collection = "workLog")
+@Document(collection = "worklog")
 class WorklogClone(
 
     @DBRef(lazy = true)
