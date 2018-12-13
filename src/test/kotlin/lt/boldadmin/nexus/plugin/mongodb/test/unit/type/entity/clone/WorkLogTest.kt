@@ -4,7 +4,7 @@ import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.Worklog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
-import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorkLogClone
+import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -14,7 +14,7 @@ class WorkLogTest {
     fun `Sets worklog clone`() {
         val expectedClone = createWorkLogClone()
 
-        val actualClone = WorkLogClone().apply { set(createWorkLog()) }
+        val actualClone = WorklogClone().apply { set(createWorkLog()) }
 
         assertEquals(expectedClone.project, actualClone.project)
         assertEquals(expectedClone.collaborator, actualClone.collaborator)
@@ -40,7 +40,7 @@ class WorkLogTest {
         assertEquals(expectedUser.id, actualUser.id)
     }
 
-    private fun createWorkLogClone() = WorkLogClone(
+    private fun createWorkLogClone() = WorklogClone(
         PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
     )
 
