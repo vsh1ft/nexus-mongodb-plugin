@@ -10,7 +10,7 @@ import java.util.*
 @Document(collection = "company")
 class CompanyClone(
 
-    internal var id: String? = null,
+    internal var id: String = "",
 
     internal var name: String = "",
 

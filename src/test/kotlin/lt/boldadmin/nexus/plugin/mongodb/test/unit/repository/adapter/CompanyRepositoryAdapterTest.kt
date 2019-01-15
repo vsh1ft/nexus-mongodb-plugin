@@ -68,7 +68,7 @@ class CompanyRepositoryAdapterTest {
 
     private fun createCompany() =
         Company().apply {
-            id = null
+            id = COMPANY_ID
             name = COMPANY_NAME
             customers = CUSTOMERS
             collaborators = COLLABORATORS

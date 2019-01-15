@@ -24,7 +24,7 @@ class WorklogClone(
 
     internal var description: String = "",
 
-    internal var id: String? = null
+    internal var id: String = ""
 ) {
 
     internal fun set(worklog: Worklog) {
