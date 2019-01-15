@@ -67,7 +67,7 @@ class UserRepositoryAdapterTest {
 
         val actualUser = adapter.findByEmail(USER_EMAIL)
 
-        assertUserFieldsAreEqual(expectedUser.get(), actualUser!!)
+        assertUserFieldsAreEqual(expectedUser.get(), actualUser)
     }
 
     @Test

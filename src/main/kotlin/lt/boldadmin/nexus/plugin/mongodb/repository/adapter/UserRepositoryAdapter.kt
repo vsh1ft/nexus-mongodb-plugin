@@ -19,7 +19,7 @@ class UserRepositoryAdapter(private val userMongoRepository: UserMongoRepository
 
     override fun findById(id: String) = userMongoRepository.findById(id).get().get()
 
-    override fun findByEmail(email: String) = userMongoRepository.findByEmail(email)?.get()
+    override fun findByEmail(email: String) = userMongoRepository.findByEmail(email).get()
 
     override fun existsByEmail(email: String) = userMongoRepository.existsByEmail(email)
 
