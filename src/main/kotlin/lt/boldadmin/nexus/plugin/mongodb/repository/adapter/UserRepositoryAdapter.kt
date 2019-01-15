@@ -21,6 +21,8 @@ class UserRepositoryAdapter(private val userMongoRepository: UserMongoRepository
 
     override fun findByEmail(email: String) = userMongoRepository.findByEmail(email)?.get()
 
+    override fun existsByEmail(email: String) = userMongoRepository.existsByEmail(email)
+
     override fun findByCollaboratorId(collaboratorId: String) =
         findAll().single { user -> user.company.collaborators.any { it.id == collaboratorId } }
 
