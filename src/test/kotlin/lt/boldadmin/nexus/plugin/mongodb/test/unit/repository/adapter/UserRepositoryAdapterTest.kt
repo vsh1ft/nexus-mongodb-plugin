@@ -90,13 +90,21 @@ class UserRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets all users`() {
-        val userClones = listOf(TypeFactory().createUserClone())
-        doReturn(userClones).`when`(userMongoRepositorySpy).findAll()
+    fun `Exists any when count is greater than zero`() {
+        doReturn(1L).`when`(userMongoRepositorySpy).count()
 
-        val actualUsers = adapter.findAll()
+        val actualExists = adapter.existsAny()
 
-        assertUserFieldsAreEqual(userClones[0].get(), actualUsers.single())
+        assertTrue(actualExists)
+    }
+
+    @Test
+    fun `Does not exist when count is equal to zero`() {
+        doReturn(0L).`when`(userMongoRepositorySpy).count()
+
+        val actualExists = adapter.existsAny()
+
+        assertFalse(actualExists)
     }
 
     @Test
