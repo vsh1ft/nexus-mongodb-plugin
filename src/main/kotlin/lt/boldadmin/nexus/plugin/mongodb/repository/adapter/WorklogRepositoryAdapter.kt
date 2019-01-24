@@ -59,5 +59,9 @@ class WorklogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoR
     override fun doesCollaboratorHaveWorklogIntervals(collaboratorId: String, intervalIds: Collection<String>) =
         intervalIds.all { doesCollaboratorHaveWorklogInterval(collaboratorId, it) }
 
+    override fun findByTimestampBetweenAndProjectId (timestampGT: Long, timestampLT: Long, projectId: String)=
+    worklogMongoRepository.findByTimestampBetweenAndProjectId(timestampGT, timestampLT, projectId).map {it.get()}
 
+    override fun findByTimestampBetweenAndCollaboratorId (timestampGT: Long, timestampLT: Long, collaboratorId: String)=
+        worklogMongoRepository.findByTimestampBetweenAndCollaboratorId(timestampGT, timestampLT, collaboratorId).map {it.get()}
 }

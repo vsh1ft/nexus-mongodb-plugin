@@ -25,4 +25,10 @@ interface WorklogMongoRepository : MongoRepository<WorklogClone, String> {
 
     fun existsByProjectIdAndCollaboratorId(projectId: String, collaboratorId: String): Boolean
 
+    fun findByTimestampBetweenAndProjectId (timestampGT: Long, timestampLT: Long, projectId: String)
+        : Collection<WorklogClone>
+
+    fun findByTimestampBetweenAndCollaboratorId (timestampGT: Long, timestampLT: Long, collaboratorId: String)
+        : Collection<WorklogClone>
+
 }
