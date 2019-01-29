@@ -6,10 +6,10 @@ import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 
-class WorklogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoRepository,
-                               private val userRepositoryAdapter: UserRepositoryAdapter): WorklogRepository {
-    override fun existsByProjectIdAndCollaboratorId(projectId: String, collaboratorId: String) =
-        worklogMongoRepository.existsByProjectIdAndCollaboratorId(projectId, collaboratorId)
+class WorklogRepositoryAdapter(
+    private val worklogMongoRepository: WorklogMongoRepository,
+    private val userRepositoryAdapter: UserRepositoryAdapter
+): WorklogRepository {
 
     override fun save(worklog: Worklog) {
         val worklogClone = WorklogClone().apply { set(worklog) }
@@ -43,6 +43,18 @@ class WorklogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoR
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(collaboratorId, workStatus)
             ?.get()
 
+    override fun findLatestByProjectIdAndCollaboratorIdAndWorkStatusNot(
+        projectId: String,
+        collaboratorId: String,
+        workStatus: WorkStatus
+    ) =
+        worklogMongoRepository
+            .findFirstByProjectIdAndCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(
+                projectId,
+                collaboratorId,
+                workStatus
+            )?.get()
+
     override fun findLatestByIntervalIdAndWorkStatus(intervalId: String, workStatus: WorkStatus) =
         worklogMongoRepository
             .findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(intervalId, workStatus)
@@ -58,6 +70,5 @@ class WorklogRepositoryAdapter(private val worklogMongoRepository: WorklogMongoR
 
     override fun doesCollaboratorHaveWorklogIntervals(collaboratorId: String, intervalIds: Collection<String>) =
         intervalIds.all { doesCollaboratorHaveWorklogInterval(collaboratorId, it) }
-
 
 }

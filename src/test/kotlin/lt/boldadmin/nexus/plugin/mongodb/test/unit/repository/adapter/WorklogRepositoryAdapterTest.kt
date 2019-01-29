@@ -123,6 +123,21 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
+    fun `Gets latest worklog by project id, collaborator id and not by work status`() {
+        doReturn(createWorklogClone()).`when`(worklogMongoRepositorySpy)
+            .findFirstByProjectIdAndCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(
+                PROJECT_ID,
+                COLLABORATOR_ID,
+                WORK_STATUS
+            )
+
+        val actualWorkLog =
+            adapter.findLatestByProjectIdAndCollaboratorIdAndWorkStatusNot(PROJECT_ID, COLLABORATOR_ID, WORK_STATUS)
+
+        assertWorkLogFieldsAreEqual(actualWorkLog!!)
+    }
+
+    @Test
     fun `Gets null if there is not latest interval endpoint by collaborator id and status`() {
         doReturn(null).`when`(worklogMongoRepositorySpy)
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(COLLABORATOR_ID, WORK_STATUS)
@@ -159,15 +174,6 @@ class WorklogRepositoryAdapterTest {
         val actualWorklog = adapter.findLatestByIntervalIdAndWorkStatus(INTERVAL_ID, WORK_STATUS)
 
         assertNull(actualWorklog)
-    }
-
-    @Test
-    fun `Confirms that worklog exists by project id and collaborator id`() {
-        doReturn(true).`when`(worklogMongoRepositorySpy).existsByProjectIdAndCollaboratorId(PROJECT_ID, COLLABORATOR_ID)
-
-        val exists = adapter.existsByProjectIdAndCollaboratorId(PROJECT_ID, COLLABORATOR_ID)
-
-        assertTrue(exists)
     }
 
     @Test

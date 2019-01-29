@@ -215,6 +215,17 @@ class UserRepositoryAdapterTest {
     }
 
     @Test
+    fun `Finds User Collaborators`() {
+        val user = TypeFactory().createUserClone()
+        doReturn(Optional.of(user)).`when`(userMongoRepositorySpy).findById(USER_ID)
+
+        val collaborators = adapter.findCollaboratorsByUserId(USER_ID)
+
+        assertEquals(1, collaborators.size)
+        assertEquals(COLLABORATOR_ID, collaborators.first().id)
+    }
+
+    @Test
     fun `Finds by collaborator id`() {
         val expectedUser = TypeFactory().createUserClone()
         doReturn(listOf(expectedUser)).`when`(userMongoRepositorySpy).findAll()
