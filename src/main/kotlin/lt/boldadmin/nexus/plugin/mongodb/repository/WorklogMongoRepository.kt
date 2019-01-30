@@ -32,6 +32,4 @@ interface WorklogMongoRepository: MongoRepository<WorklogClone, String> {
 
     fun existsByIntervalId(intervalId: String): Boolean
 
-    fun existsByProjectIdAndCollaboratorId(projectId: String, collaboratorId: String): Boolean
-
 }

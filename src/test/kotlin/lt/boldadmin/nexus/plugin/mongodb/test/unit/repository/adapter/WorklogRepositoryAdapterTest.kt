@@ -179,7 +179,7 @@ class WorklogRepositoryAdapterTest {
     @Test
     fun `Confirms that user doesn't have worklog intervals`() {
         val userId = "userId"
-        val worklogClone = createWorklogClone(createCollaborator(COLLABORATOR_ID))
+        val worklogClone = createWorklogClone()
         doReturn(listOf(worklogClone, worklogClone)).`when`(worklogMongoRepositorySpy).findByIntervalId(INTERVAL_ID)
 
         val hasWorklogInterval = adapter.doesUserHaveWorklogInterval(userId, INTERVAL_ID)
@@ -190,7 +190,7 @@ class WorklogRepositoryAdapterTest {
     @Test
     fun `Confirms that user has worklog intervals`() {
         val userId = "userId"
-        val worklogClone = createWorklogClone(createCollaborator(COLLABORATOR_ID))
+        val worklogClone = createWorklogClone()
         doReturn(listOf(worklogClone, worklogClone)).`when`(worklogMongoRepositorySpy).findByIntervalId(INTERVAL_ID)
         doReturn(true).`when`(userRepositoryAdapterSpy).doesUserHaveWorklog(eq(userId), any())
 
@@ -201,7 +201,7 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Provides status that collaborator has worklog interval`() {
-        val worklogClone = createWorklogClone(createCollaborator(COLLABORATOR_ID))
+        val worklogClone = createWorklogClone()
         doReturn(listOf(worklogClone, worklogClone)).`when`(worklogMongoRepositorySpy).findByIntervalId(INTERVAL_ID)
 
         val hasWorkLogInterval = adapter.doesCollaboratorHaveWorklogInterval(COLLABORATOR_ID, INTERVAL_ID)
@@ -211,7 +211,7 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Provides status that collaborator does not have worklog interval`() {
-        val worklogClone = createWorklogClone(createCollaborator(COLLABORATOR_ID))
+        val worklogClone = createWorklogClone()
         val worklogWithOtherCollaboratorClone = createWorklogClone(createCollaborator("someOtherCollaboratorId"))
         doReturn(listOf(worklogClone, worklogWithOtherCollaboratorClone))
             .`when`(worklogMongoRepositorySpy).findByIntervalId(INTERVAL_ID)
@@ -223,7 +223,7 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Provides status that user has worklog interval`() {
-        val worklogClone = createWorklogClone(createCollaborator(COLLABORATOR_ID))
+        val worklogClone = createWorklogClone()
         doReturn(listOf(worklogClone, worklogClone)).`when`(worklogMongoRepositorySpy).findByIntervalId(INTERVAL_ID)
 
         val hasWorklogInterval = adapter.doesCollaboratorHaveWorklogInterval(COLLABORATOR_ID, INTERVAL_ID)
@@ -233,7 +233,7 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Confirms that collaborator has work log intervals`() {
-        val worklogClone = createWorklogClone(createCollaborator(COLLABORATOR_ID))
+        val worklogClone = createWorklogClone()
         doReturn(listOf(worklogClone, worklogClone)).`when`(worklogMongoRepositorySpy).findByIntervalId(INTERVAL_ID)
 
         val hasWorkLogInterval = adapter
@@ -244,7 +244,7 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Denies that collaborator has worklog intervals`() {
-        val worklogClone = createWorklogClone(createCollaborator(COLLABORATOR_ID))
+        val worklogClone = createWorklogClone()
         val worklogWithOtherCollaboratorClone = createWorklogClone(createCollaborator("someOtherCollaboratorId"))
         doReturn(listOf(worklogClone, worklogClone)).`when`(worklogMongoRepositorySpy).findByIntervalId(INTERVAL_ID)
         doReturn(listOf(worklogClone, worklogWithOtherCollaboratorClone))
@@ -276,31 +276,24 @@ class WorklogRepositoryAdapterTest {
         PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, null
     )
 
+    private fun createWorklogClone(collaborator: Collaborator = COLLABORATOR) = WorklogClone(
+        PROJECT, collaborator, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
+    )
+
+    private fun createCollaborator(id: String = COLLABORATOR_ID) = Collaborator().apply { this.id = id }
+
     companion object {
         private val COLLABORATOR_ID = "COLLABORATOR_ID"
         private val PROJECT_ID = "PROJECT_ID"
 
-        private val PROJECT = createProject()
-        private val COLLABORATOR = createCollaborator()
+        private val PROJECT = Project().apply { id = PROJECT_ID }
+        private val COLLABORATOR = Collaborator().apply { id = COLLABORATOR_ID }
         private val TIMESTAMP = 123456L
         private val WORK_STATUS = WorkStatus.START
         private val INTERVAL_ID = "1"
         private val DESCRIPTION = "DESCRIPTION"
         private val WORK_LOG_ID = "WORK_LOG_ID"
         private val SECOND_INTERVAL_ID = "secondIntervalId"
-
-        private fun createWorklogClone(
-            collaborator: Collaborator = COLLABORATOR,
-            workStatus: WorkStatus = WORK_STATUS,
-            project: Project = PROJECT
-        ) = WorklogClone(
-            project, collaborator, TIMESTAMP, workStatus, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
-        )
-
-        private fun createProject(projectId: String = PROJECT_ID) = Project().apply { this.id = projectId }
-
-        private fun createCollaborator(id: String = COLLABORATOR_ID) =
-            Collaborator().apply { this.id = id }
 
     }
 
