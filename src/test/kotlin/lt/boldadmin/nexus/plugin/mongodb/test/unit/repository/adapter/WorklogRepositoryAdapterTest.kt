@@ -9,11 +9,16 @@ import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.WorklogRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
+import org.bson.types.ObjectId
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.data.domain.Sort
+import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
 import java.util.*
 import kotlin.test.*
 
@@ -26,11 +31,14 @@ class WorklogRepositoryAdapterTest {
     @Mock
     private lateinit var userRepositoryAdapterSpy: UserRepositoryAdapter
 
+    @Mock
+    private lateinit var templateSpy: MongoTemplate
+
     private lateinit var adapter: WorklogRepositoryAdapter
 
     @Before
     fun setUp() {
-        adapter = WorklogRepositoryAdapter(worklogMongoRepositorySpy, userRepositoryAdapterSpy)
+        adapter = WorklogRepositoryAdapter(templateSpy, userRepositoryAdapterSpy, worklogMongoRepositorySpy)
     }
 
     @Test
@@ -124,17 +132,20 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Gets latest worklog by project id, collaborator id and not by work status`() {
-        doReturn(createWorklogClone()).`when`(worklogMongoRepositorySpy)
-            .findFirstByProjectIdAndCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(
-                PROJECT_ID,
-                COLLABORATOR_ID,
-                WORK_STATUS
-            )
+        val expectedQuery = Query().apply {
+            addCriteria(Criteria.where("project.\$id").`is`(ObjectId(PROJECT_ID)))
+            addCriteria(Criteria.where("collaborator.\$id").`is`(ObjectId(COLLABORATOR_ID)))
+            addCriteria(Criteria.where("workStatus").ne(WORK_STATUS))
+            with(Sort(Sort.Direction.DESC, "timestamp"))
+            limit(1)
+        }
 
-        val actualWorkLog =
-            adapter.findLatestWithWorkStatusNot(PROJECT_ID, COLLABORATOR_ID, WORK_STATUS)
+        adapter.findLatestWithWorkStatusNot(PROJECT_ID, COLLABORATOR_ID, WORK_STATUS)
 
-        assertWorkLogFieldsAreEqual(actualWorkLog!!)
+        argumentCaptor<Query>().apply {
+            verify(templateSpy).findOne(capture(), eq(Worklog::class.java))
+            assertEquals(expectedQuery, firstValue)
+        }
     }
 
     @Test
@@ -283,8 +294,8 @@ class WorklogRepositoryAdapterTest {
     private fun createCollaborator(id: String = COLLABORATOR_ID) = Collaborator().apply { this.id = id }
 
     companion object {
-        private val COLLABORATOR_ID = "COLLABORATOR_ID"
-        private val PROJECT_ID = "PROJECT_ID"
+        private val COLLABORATOR_ID = "5a3020603004e0472284a428"
+        private val PROJECT_ID = "5a3020603004e0472284a429"
 
         private val PROJECT = Project(PROJECT_ID)
         private val COLLABORATOR = Collaborator().apply { id = COLLABORATOR_ID }

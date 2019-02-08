@@ -5,10 +5,17 @@ import lt.boldadmin.nexus.api.type.entity.Worklog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
+import org.bson.types.ObjectId
+import org.springframework.data.domain.Sort
+import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
+
 
 class WorklogRepositoryAdapter(
-    private val worklogMongoRepository: WorklogMongoRepository,
-    private val userRepositoryAdapter: UserRepositoryAdapter
+    private val template: MongoTemplate,
+    private val userRepositoryAdapter: UserRepositoryAdapter,
+    private val worklogMongoRepository: WorklogMongoRepository
 ): WorklogRepository {
 
     override fun save(worklog: Worklog) {
@@ -43,13 +50,20 @@ class WorklogRepositoryAdapter(
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(collaboratorId, workStatus)
             ?.get()
 
-    override fun findLatestWithWorkStatusNot(projectId: String, collaboratorId: String, workStatus: WorkStatus) =
-        worklogMongoRepository
-            .findFirstByProjectIdAndCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(
-                projectId,
-                collaboratorId,
-                workStatus
-            )?.get()
+    override fun findLatestWithWorkStatusNot(
+        projectId: String,
+        collaboratorId: String,
+        workStatus: WorkStatus
+    ): Worklog? {
+        val query = Query().apply {
+            addCriteria(Criteria.where("project.\$id").`is`(ObjectId(projectId)))
+            addCriteria(Criteria.where("collaborator.\$id").`is`(ObjectId(collaboratorId)))
+            addCriteria(Criteria.where("workStatus").ne(workStatus))
+            with(Sort(Sort.Direction.DESC, "timestamp"))
+            limit(1)
+        }
+        return template.findOne(query, Worklog::class.java)
+    }
 
     override fun findLatest(intervalId: String, workStatus: WorkStatus) =
         worklogMongoRepository
