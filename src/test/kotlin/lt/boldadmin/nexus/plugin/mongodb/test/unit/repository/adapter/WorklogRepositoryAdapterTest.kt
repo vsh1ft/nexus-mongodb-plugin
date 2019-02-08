@@ -117,7 +117,7 @@ class WorklogRepositoryAdapterTest {
         doReturn(createWorklogClone()).`when`(worklogMongoRepositorySpy)
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(COLLABORATOR_ID, WORK_STATUS)
 
-        val actualWorkLog = adapter.findLatestByCollaboratorIdAndWorkStatusNot(COLLABORATOR_ID, WORK_STATUS)
+        val actualWorkLog = adapter.findLatestWithWorkStatusNot(COLLABORATOR_ID, WORK_STATUS)
 
         assertWorkLogFieldsAreEqual(actualWorkLog!!)
     }
@@ -132,7 +132,7 @@ class WorklogRepositoryAdapterTest {
             )
 
         val actualWorkLog =
-            adapter.findLatestByProjectIdAndCollaboratorIdAndWorkStatusNot(PROJECT_ID, COLLABORATOR_ID, WORK_STATUS)
+            adapter.findLatestWithWorkStatusNot(PROJECT_ID, COLLABORATOR_ID, WORK_STATUS)
 
         assertWorkLogFieldsAreEqual(actualWorkLog!!)
     }
@@ -142,7 +142,7 @@ class WorklogRepositoryAdapterTest {
         doReturn(null).`when`(worklogMongoRepositorySpy)
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(COLLABORATOR_ID, WORK_STATUS)
 
-        val actualWorkLog = adapter.findLatestByCollaboratorIdAndWorkStatusNot(COLLABORATOR_ID, WORK_STATUS)
+        val actualWorkLog = adapter.findLatestWithWorkStatusNot(COLLABORATOR_ID, WORK_STATUS)
 
         assertNull(actualWorkLog)
     }
@@ -161,7 +161,7 @@ class WorklogRepositoryAdapterTest {
         doReturn(createWorklogClone()).`when`(worklogMongoRepositorySpy)
             .findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(INTERVAL_ID, WORK_STATUS)
 
-        val actualWorkLog = adapter.findLatestByIntervalIdAndWorkStatus(INTERVAL_ID, WORK_STATUS)
+        val actualWorkLog = adapter.findLatest(INTERVAL_ID, WORK_STATUS)
 
         assertWorkLogFieldsAreEqual(actualWorkLog!!)
     }
@@ -171,7 +171,7 @@ class WorklogRepositoryAdapterTest {
         doReturn(null).`when`(worklogMongoRepositorySpy)
             .findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(INTERVAL_ID, WORK_STATUS)
 
-        val actualWorklog = adapter.findLatestByIntervalIdAndWorkStatus(INTERVAL_ID, WORK_STATUS)
+        val actualWorklog = adapter.findLatest(INTERVAL_ID, WORK_STATUS)
 
         assertNull(actualWorklog)
     }

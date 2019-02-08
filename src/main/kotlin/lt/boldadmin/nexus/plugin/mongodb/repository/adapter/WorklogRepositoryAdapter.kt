@@ -38,16 +38,12 @@ class WorklogRepositoryAdapter(
             .findByIntervalIdAndWorkStatusNotOrderByTimestampAsc(intervalId, workStatus)
             .map { it.get() }
 
-    override fun findLatestByCollaboratorIdAndWorkStatusNot(collaboratorId: String, workStatus: WorkStatus) =
+    override fun findLatestWithWorkStatusNot(collaboratorId: String, workStatus: WorkStatus) =
         worklogMongoRepository
             .findFirstByCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(collaboratorId, workStatus)
             ?.get()
 
-    override fun findLatestByProjectIdAndCollaboratorIdAndWorkStatusNot(
-        projectId: String,
-        collaboratorId: String,
-        workStatus: WorkStatus
-    ) =
+    override fun findLatestWithWorkStatusNot(projectId: String, collaboratorId: String, workStatus: WorkStatus) =
         worklogMongoRepository
             .findFirstByProjectIdAndCollaboratorIdAndWorkStatusNotOrderByTimestampDesc(
                 projectId,
@@ -55,7 +51,7 @@ class WorklogRepositoryAdapter(
                 workStatus
             )?.get()
 
-    override fun findLatestByIntervalIdAndWorkStatus(intervalId: String, workStatus: WorkStatus) =
+    override fun findLatest(intervalId: String, workStatus: WorkStatus) =
         worklogMongoRepository
             .findFirstByIntervalIdAndWorkStatusOrderByTimestampDesc(intervalId, workStatus)
             ?.get()
