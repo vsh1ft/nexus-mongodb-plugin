@@ -286,7 +286,7 @@ class WorklogRepositoryAdapterTest {
         private val COLLABORATOR_ID = "COLLABORATOR_ID"
         private val PROJECT_ID = "PROJECT_ID"
 
-        private val PROJECT = Project().apply { id = PROJECT_ID }
+        private val PROJECT = Project(PROJECT_ID)
         private val COLLABORATOR = Collaborator().apply { id = COLLABORATOR_ID }
         private val TIMESTAMP = 123456L
         private val WORK_STATUS = WorkStatus.START
