@@ -32,13 +32,13 @@ class WorklogRepositoryAdapterTest {
     private lateinit var userRepositoryAdapterSpy: UserRepositoryAdapter
 
     @Mock
-    private lateinit var templateSpy: MongoTemplate
+    private lateinit var templateStub: MongoTemplate
 
     private lateinit var adapter: WorklogRepositoryAdapter
 
     @Before
     fun setUp() {
-        adapter = WorklogRepositoryAdapter(templateSpy, userRepositoryAdapterSpy, worklogMongoRepositorySpy)
+        adapter = WorklogRepositoryAdapter(templateStub, userRepositoryAdapterSpy, worklogMongoRepositorySpy)
     }
 
     @Test
@@ -132,20 +132,19 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Gets latest worklog by project id, collaborator id and not by work status`() {
-        val expectedQuery = Query().apply {
+        val expectedWorklog = createWorkLog()
+        val query = Query().apply {
             addCriteria(Criteria.where("project.\$id").`is`(ObjectId(PROJECT_ID)))
             addCriteria(Criteria.where("collaborator.\$id").`is`(ObjectId(COLLABORATOR_ID)))
             addCriteria(Criteria.where("workStatus").ne(WORK_STATUS))
             with(Sort(Sort.Direction.DESC, "timestamp"))
             limit(1)
         }
+        doReturn(expectedWorklog).`when`(templateStub).findOne(query, Worklog::class.java)
 
-        adapter.findLatestWithWorkStatusNot(PROJECT_ID, COLLABORATOR_ID, WORK_STATUS)
+        val actualWorklog = adapter.findLatestWithWorkStatusNot(PROJECT_ID, COLLABORATOR_ID, WORK_STATUS)
 
-        argumentCaptor<Query>().apply {
-            verify(templateSpy).findOne(capture(), eq(Worklog::class.java))
-            assertEquals(expectedQuery, firstValue)
-        }
+        assertEquals(expectedWorklog, actualWorklog)
     }
 
     @Test
