@@ -27,7 +27,7 @@ class UserRepositoryAdapter(private val userMongoRepository: UserMongoRepository
         findAll().single { user -> user.company.collaborators.any { it.id == collaboratorId } }
 
     override fun findByProjectId(projectId: String) =
-        findAll().single { it.company.customers.any { it.projects.any { it.id == projectId } } }
+        findAll().single { u -> u.company.customers.any { c -> c.projects.any { p -> p.id == projectId } } }
 
     override fun findProjectsByUserId(userId: String)=
         findById(userId)
@@ -51,8 +51,8 @@ class UserRepositoryAdapter(private val userMongoRepository: UserMongoRepository
             .any { it.id == collaboratorId }
 
     override fun doesUserHaveWorklog(userId: String, worklog: Worklog) =
-        doesUserHaveProject(userId, worklog.project.id!!) &&
-            doesUserHaveCollaborator(userId, worklog.collaborator.id!!)
+        doesUserHaveProject(userId, worklog.project.id) &&
+            doesUserHaveCollaborator(userId, worklog.collaborator.id)
 
     override fun isProjectNameUnique(projectName: String, projectId: String, userId: String) =
         findProjectsByUserId(userId)
