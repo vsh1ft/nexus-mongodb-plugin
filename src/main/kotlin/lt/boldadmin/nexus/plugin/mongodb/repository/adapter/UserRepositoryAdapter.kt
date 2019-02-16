@@ -8,6 +8,8 @@ import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.UserClone
 
 class UserRepositoryAdapter(private val userMongoRepository: UserMongoRepository): UserRepository {
 
+    override fun existsAny() = userMongoRepository.count() > 0
+
     override fun save(user: User) {
         val userClone = UserClone().apply { set(user) }
         userMongoRepository.save(userClone)
@@ -15,17 +17,17 @@ class UserRepositoryAdapter(private val userMongoRepository: UserMongoRepository
         user.id = userClone.id
     }
 
-    override fun findAll(): Collection<User> = userMongoRepository.findAll().map { it.get() }
-
     override fun findById(id: String) = userMongoRepository.findById(id).get().get()
 
-    override fun findByEmail(email: String) = userMongoRepository.findByEmail(email)?.get()
+    override fun findByEmail(email: String) = userMongoRepository.findByEmail(email).get()
+
+    override fun existsByEmail(email: String) = userMongoRepository.existsByEmail(email)
 
     override fun findByCollaboratorId(collaboratorId: String) =
         findAll().single { user -> user.company.collaborators.any { it.id == collaboratorId } }
 
     override fun findByProjectId(projectId: String) =
-        findAll().single { it.company.customers.any { it.projects.any { it.id == projectId } } }
+        findAll().single { u -> u.company.customers.any { c -> c.projects.any { p -> p.id == projectId } } }
 
     override fun findCollaboratorsByUserId(userId: String) =
         findById(userId)
@@ -55,13 +57,15 @@ class UserRepositoryAdapter(private val userMongoRepository: UserMongoRepository
             .any { it.id == collaboratorId }
 
     override fun doesUserHaveWorklog(userId: String, worklog: Worklog) =
-        doesUserHaveProject(userId, worklog.project.id!!) &&
-            doesUserHaveCollaborator(userId, worklog.collaborator.id!!)
+        doesUserHaveProject(userId, worklog.project.id) &&
+            doesUserHaveCollaborator(userId, worklog.collaborator.id)
 
     override fun isProjectNameUnique(projectName: String, projectId: String, userId: String) =
         findProjectsByUserId(userId)
             .filter { it.id != projectId }
             .none { it.name == projectName }
+
+    private fun findAll(): Collection<User> = userMongoRepository.findAll().map { it.get() }
 
     private fun getCustomers(userId: String) =
         findById(userId)

@@ -20,7 +20,10 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import java.util.*
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
 class WorklogRepositoryAdapterTest {
@@ -283,7 +286,7 @@ class WorklogRepositoryAdapterTest {
     }
 
     private fun createWorkLog() = Worklog(
-        PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, null
+        PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
     )
 
     private fun createWorklogClone(collaborator: Collaborator = COLLABORATOR) = WorklogClone(

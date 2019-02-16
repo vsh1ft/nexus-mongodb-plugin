@@ -4,8 +4,8 @@ import com.nhaarman.mockito_kotlin.*
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Company
 import lt.boldadmin.nexus.api.type.entity.Customer
-import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.CompanyRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.CompanyMongoRepository
+import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.CompanyRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.CompanyClone
 import org.junit.Before
 import org.junit.Test
@@ -13,7 +13,8 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
 class CompanyRepositoryAdapterTest {
@@ -48,37 +49,25 @@ class CompanyRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets company by name`() {
-        val companyClone = createCompanyClone()
-        doReturn(companyClone).`when`(companyMongoRepositorySpy).findByName(COMPANY_NAME)
+    fun `Exists by company name`() {
+        doReturn(true).`when`(companyMongoRepositorySpy).existsByName(COMPANY_NAME)
 
-        val actualCompany = adapter.findByName(COMPANY_NAME)
+        val expected = adapter.existsByName(COMPANY_NAME)
 
-        assertEquals(companyClone.id, actualCompany!!.id)
-        assertEquals(companyClone.name, actualCompany.name)
-        assertEquals(companyClone.customers, actualCompany.customers)
-        assertEquals(companyClone.collaborators, actualCompany.collaborators)
+        assertTrue(expected)
     }
 
     @Test
-    fun `Gets null if company doesn't exist by name`() {
-        doReturn(null).`when`(companyMongoRepositorySpy).findByName(COMPANY_NAME)
+    fun `Does not exist by company name`() {
+        doReturn(false).`when`(companyMongoRepositorySpy).existsByName(COMPANY_NAME)
 
-        val actualCompany = adapter.findByName(COMPANY_NAME)
+        val expected = adapter.existsByName(COMPANY_NAME)
 
-        assertNull(actualCompany)
+        assertFalse(expected)
     }
 
     private fun createCompany() =
         Company().apply {
-            id = null
-            name = COMPANY_NAME
-            customers = CUSTOMERS
-            collaborators = COLLABORATORS
-        }
-
-    private fun createCompanyClone() =
-        CompanyClone().apply {
             id = COMPANY_ID
             name = COMPANY_NAME
             customers = CUSTOMERS

@@ -4,9 +4,9 @@ import com.nhaarman.mockito_kotlin.*
 import lt.boldadmin.nexus.api.type.entity.Customer
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.valueobject.Address
+import lt.boldadmin.nexus.plugin.mongodb.repository.CustomerMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.CustomerRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.CustomerClone
-import lt.boldadmin.nexus.plugin.mongodb.repository.CustomerMongoRepository
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -86,7 +86,7 @@ class CustomerRepositoryAdapterTest {
     }
 
     private fun createCustomer() = Customer().apply {
-        id = null
+        id = CUSTOMER_ID
         name = CUSTOMER_NAME
         address = CUSTOMER_ADDRESS
         email = CUSTOMER_EMAIL

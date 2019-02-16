@@ -16,7 +16,9 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import java.util.*
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
 class UserRepositoryAdapterTest {
@@ -65,16 +67,16 @@ class UserRepositoryAdapterTest {
 
         val actualUser = adapter.findByEmail(USER_EMAIL)
 
-        assertUserFieldsAreEqual(expectedUser.get(), actualUser!!)
+        assertUserFieldsAreEqual(expectedUser.get(), actualUser)
     }
 
     @Test
-    fun `Gets null if user doesn't exist by email`() {
-        doReturn(null).`when`(userMongoRepositorySpy).findByEmail(USER_EMAIL)
+    fun `User exist by email`() {
+        doReturn(true).`when`(userMongoRepositorySpy).existsByEmail(USER_EMAIL)
 
-        val actualUser = adapter.findByEmail(USER_EMAIL)
+        val actualExists = adapter.existsByEmail(USER_EMAIL)
 
-        assertNull(actualUser)
+        assertTrue(actualExists)
     }
 
     @Test
@@ -88,13 +90,21 @@ class UserRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets all users`() {
-        val userClones = listOf(TypeFactory().createUserClone())
-        doReturn(userClones).`when`(userMongoRepositorySpy).findAll()
+    fun `Exists any when count is greater than zero`() {
+        doReturn(1L).`when`(userMongoRepositorySpy).count()
 
-        val actualUsers = adapter.findAll()
+        val actualExists = adapter.existsAny()
 
-        assertUserFieldsAreEqual(userClones[0].get(), actualUsers.single())
+        assertTrue(actualExists)
+    }
+
+    @Test
+    fun `Does not exist when count is equal to zero`() {
+        doReturn(0L).`when`(userMongoRepositorySpy).count()
+
+        val actualExists = adapter.existsAny()
+
+        assertFalse(actualExists)
     }
 
     @Test
