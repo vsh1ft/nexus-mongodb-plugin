@@ -145,7 +145,7 @@ class WorklogRepositoryAdapterTest {
         }
         doReturn(expectedWorklog).`when`(templateStub).findOne(query, Worklog::class.java)
 
-        val actualWorklog = adapter.findLatestWithWorkStatusNot(PROJECT_ID, COLLABORATOR_ID, WORK_STATUS)
+        val actualWorklog = adapter.findLatestWithWorkStatusNot(COLLABORATOR_ID, PROJECT_ID, WORK_STATUS)
 
         assertEquals(expectedWorklog, actualWorklog)
     }

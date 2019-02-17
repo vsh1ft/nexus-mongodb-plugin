@@ -51,8 +51,8 @@ class WorklogRepositoryAdapter(
             ?.get()
 
     override fun findLatestWithWorkStatusNot(
-        projectId: String,
         collaboratorId: String,
+        projectId: String,
         workStatus: WorkStatus
     ): Worklog? {
         val query = Query().apply {
