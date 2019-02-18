@@ -56,8 +56,8 @@ class WorklogRepositoryAdapter(
         workStatus: WorkStatus
     ): Worklog? {
         val query = Query().apply {
-            addCriteria(Criteria.where("project.\$id").`is`(ObjectId(projectId)))
-            addCriteria(Criteria.where("collaborator.\$id").`is`(ObjectId(collaboratorId)))
+            addCriteria(Criteria.where("project.\$id").`is`(projectId))
+            addCriteria(Criteria.where("collaborator.\$id").`is`(collaboratorId))
             addCriteria(Criteria.where("workStatus").ne(workStatus))
             with(Sort(Sort.Direction.DESC, "timestamp"))
             limit(1)

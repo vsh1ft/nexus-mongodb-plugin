@@ -137,8 +137,8 @@ class WorklogRepositoryAdapterTest {
     fun `Gets latest worklog by project id, collaborator id and not by work status`() {
         val expectedWorklog = createWorkLog()
         val query = Query().apply {
-            addCriteria(Criteria.where("project.\$id").`is`(ObjectId(PROJECT_ID)))
-            addCriteria(Criteria.where("collaborator.\$id").`is`(ObjectId(COLLABORATOR_ID)))
+            addCriteria(Criteria.where("project.\$id").`is`(PROJECT_ID))
+            addCriteria(Criteria.where("collaborator.\$id").`is`(COLLABORATOR_ID))
             addCriteria(Criteria.where("workStatus").ne(WORK_STATUS))
             with(Sort(Sort.Direction.DESC, "timestamp"))
             limit(1)
