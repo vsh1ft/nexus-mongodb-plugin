@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 
-
 class WorklogRepositoryAdapter(
     private val template: MongoTemplate,
     private val userRepositoryAdapter: UserRepositoryAdapter,
