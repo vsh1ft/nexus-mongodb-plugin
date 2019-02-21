@@ -374,11 +374,15 @@ class UserRepositoryAdapterTest {
 
         private fun createCollaborator() = Collaborator().apply { id = COLLABORATOR_ID }
 
-        fun createWorklog(worklogId: String = "", workStatus: WorkStatus = WorkStatus.START) = Worklog(
-            createProject(),
-            createCollaborator(),
-            0, workStatus, INTERVAL_ID, "", worklogId
-        )
+        fun createWorklog(worklogId: String = "", workStatus: WorkStatus = WorkStatus.START) =
+            Worklog(
+                createProject(),
+                createCollaborator(),
+                0,
+                workStatus,
+                INTERVAL_ID,
+                worklogId
+            )
 
     }
 
