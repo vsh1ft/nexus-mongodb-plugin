@@ -13,8 +13,6 @@ class UserRepositoryAdapter(private val userMongoRepository: UserMongoRepository
     override fun save(user: User) {
         val userClone = UserClone().apply { set(user) }
         userMongoRepository.save(userClone)
-
-        user.id = userClone.id
     }
 
     override fun findById(id: String) = userMongoRepository.findById(id).get().get()
