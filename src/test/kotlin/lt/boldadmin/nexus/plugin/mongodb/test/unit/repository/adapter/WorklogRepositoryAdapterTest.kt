@@ -20,7 +20,6 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
@@ -116,16 +115,6 @@ class WorklogRepositoryAdapterTest {
         val actualWorkLog = adapter.findLatest(INTERVAL_ID)
 
         assertWorkLogFieldsAreEqual(actualWorkLog)
-    }
-
-    @Test
-    fun `Gets null if there is no workLog by interval id and workStatus`() {
-        doReturn(null).`when`(worklogMongoRepositorySpy)
-            .findFirstByIntervalIdOrderByTimestampDesc(INTERVAL_ID)
-
-        val actualWorklog = adapter.findLatest(INTERVAL_ID)
-
-        assertNull(actualWorklog)
     }
 
     @Test
