@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(MockitoJUnitRunner::class)
@@ -108,13 +109,23 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets latest workLog by interval id and workStatus`() {
+    fun `Gets latest workLog by collaborator id`() {
         doReturn(createWorklogClone()).`when`(worklogMongoRepositorySpy)
-            .findFirstByIntervalIdOrderByTimestampDesc(INTERVAL_ID)
+            .findFirstByCollaboratorIdOrderByTimestampDesc(COLLABORATOR_ID)
 
-        val actualWorkLog = adapter.findLatest(INTERVAL_ID)
+        val actualWorkLog = adapter.findLatest(COLLABORATOR_ID)
 
-        assertWorkLogFieldsAreEqual(actualWorkLog)
+        assertWorkLogFieldsAreEqual(actualWorkLog!!)
+    }
+
+    @Test
+    fun `Provides null when worklog does not exist`() {
+        doReturn(null).`when`(worklogMongoRepositorySpy)
+            .findFirstByCollaboratorIdOrderByTimestampDesc(COLLABORATOR_ID)
+
+        val actualWorkLog = adapter.findLatest(COLLABORATOR_ID)
+
+        assertNull(actualWorkLog)
     }
 
     @Test

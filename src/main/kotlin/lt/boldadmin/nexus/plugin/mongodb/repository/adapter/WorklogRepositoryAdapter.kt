@@ -39,8 +39,8 @@ class WorklogRepositoryAdapter(
         return template.findOne(query, Worklog::class.java)
     }
 
-    override fun findLatest(intervalId: String) =
-        worklogMongoRepository.findFirstByIntervalIdOrderByTimestampDesc(intervalId)!!.get()
+    override fun findLatest(collaboratorId: String) =
+        worklogMongoRepository.findFirstByCollaboratorIdOrderByTimestampDesc(collaboratorId)?.get()
 
     override fun doesUserHaveWorklogInterval(userId: String, intervalId: String) =
         findByIntervalId(intervalId).all { userRepositoryAdapter.doesUserHaveWorklog(userId, it) }

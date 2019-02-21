@@ -13,6 +13,6 @@ interface WorklogMongoRepository : MongoRepository<WorklogClone, String> {
 
     fun findByIntervalIdOrderByTimestampAsc(intervalId: String): Collection<WorklogClone>
 
-    fun findFirstByIntervalIdOrderByTimestampDesc(intervalId: String): WorklogClone?
+    fun findFirstByCollaboratorIdOrderByTimestampDesc(collaboratorId: String): WorklogClone?
 
 }
