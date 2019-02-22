@@ -6,9 +6,7 @@ import lt.boldadmin.nexus.plugin.mongodb.repository.ProjectMongoRepository
 
 class ProjectRepositoryAdapter(private val projectMongoRepository: ProjectMongoRepository): ProjectRepository {
 
-    override fun save(project: Project) {
-        projectMongoRepository.save(project)
-    }
+    override fun save(project: Project) { projectMongoRepository.save(project) }
 
     override fun findById(id: String) = projectMongoRepository.findById(id).get()
 

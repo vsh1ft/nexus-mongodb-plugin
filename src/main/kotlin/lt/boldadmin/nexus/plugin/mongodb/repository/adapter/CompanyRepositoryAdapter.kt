@@ -10,8 +10,6 @@ class CompanyRepositoryAdapter(private val companyMongoRepository: CompanyMongoR
     override fun save(company: Company) {
         val companyClone = CompanyClone().apply { set(company) }
         companyMongoRepository.save(companyClone)
-
-        company.id = companyClone.id
     }
 
     override fun existsByName(name: String) = companyMongoRepository.existsByName(name)

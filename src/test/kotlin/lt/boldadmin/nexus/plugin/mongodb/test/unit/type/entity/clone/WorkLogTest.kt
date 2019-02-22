@@ -21,7 +21,6 @@ class WorkLogTest {
         assertEquals(expectedClone.timestamp, actualClone.timestamp)
         assertEquals(expectedClone.workStatus, actualClone.workStatus)
         assertEquals(expectedClone.intervalId, actualClone.intervalId)
-        assertEquals(expectedClone.description, actualClone.description)
         assertEquals(expectedClone.id, actualClone.id)
     }
 
@@ -36,16 +35,15 @@ class WorkLogTest {
         assertEquals(expectedUser.timestamp, actualUser.timestamp)
         assertEquals(expectedUser.workStatus, actualUser.workStatus)
         assertEquals(expectedUser.intervalId, actualUser.intervalId)
-        assertEquals(expectedUser.description, actualUser.description)
         assertEquals(expectedUser.id, actualUser.id)
     }
 
     private fun createWorkLogClone() = WorklogClone(
-        PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
+        PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, WORK_LOG_ID
     )
 
     private fun createWorkLog() = Worklog(
-        PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, DESCRIPTION, WORK_LOG_ID
+        PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, WORK_LOG_ID
     )
 
     companion object {
@@ -57,7 +55,6 @@ class WorkLogTest {
         private val TIMESTAMP = 123456L
         private val WORK_STATUS = WorkStatus.START
         private val INTERVAL_ID = "1"
-        private val DESCRIPTION = "DESCRIPTION"
         private val WORK_LOG_ID = "WORK_LOG_ID"
     }
 

@@ -22,8 +22,6 @@ class WorklogClone(
 
     internal var intervalId: String = "",
 
-    internal var description: String = "",
-
     internal var id: String = ""
 ) {
 
@@ -34,11 +32,10 @@ class WorklogClone(
             timestamp = worklog.timestamp
             workStatus = worklog.workStatus
             intervalId = worklog.intervalId
-            description = worklog.description
             id = worklog.id
         }
     }
 
-    internal fun get() = Worklog(project, collaborator, timestamp, workStatus, intervalId, description, id)
+    internal fun get() = Worklog(project, collaborator, timestamp, workStatus, intervalId, id)
 
 }
