@@ -2,9 +2,7 @@ package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 
 import com.nhaarman.mockito_kotlin.*
 import lt.boldadmin.nexus.api.type.entity.*
-import lt.boldadmin.nexus.api.type.valueobject.Address
-import lt.boldadmin.nexus.api.type.valueobject.Country
-import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
+import lt.boldadmin.nexus.api.type.valueobject.*
 import lt.boldadmin.nexus.plugin.mongodb.repository.UserMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.UserClone
@@ -327,12 +325,7 @@ class UserRepositoryAdapterTest {
         private val COLLABORATOR_ID = "COLLABORATOR_ID"
         private val PROJECT_ID = "PROJECT_ID"
         private val PROJECT_NAME = "PROJECT_NAME"
-        private val PROJECT_ADDRESS = Address(
-            "Vileikos g. 8",
-            "LT-44404",
-            "Kaunas",
-            Country("Lithuania")
-        )
+        private val PROJECT_LOCATION = Location(1.1, 2.2)
     }
 
     inner class TypeFactory {
@@ -369,7 +362,7 @@ class UserRepositoryAdapterTest {
 
         private fun createProject() = Project(
             PROJECT_ID, PROJECT_NAME,
-            PROJECT_ADDRESS
+            PROJECT_LOCATION
         )
 
         private fun createCollaborator() = Collaborator().apply { id = COLLABORATOR_ID }
