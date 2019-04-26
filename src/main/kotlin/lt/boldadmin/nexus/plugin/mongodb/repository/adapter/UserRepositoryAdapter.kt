@@ -21,42 +21,26 @@ class UserRepositoryAdapter(private val userMongoRepository: UserMongoRepository
 
     override fun existsByEmail(email: String) = userMongoRepository.existsByEmail(email)
 
+    override fun existsByCompanyName(name: String) = userMongoRepository.existsByCompanyName(name)
+
     override fun findByCollaboratorId(collaboratorId: String) =
-        findAll().single { user -> user.company.collaborators.any { it.id == collaboratorId } }
+        findAll().single { user -> user.collaborators.any { it.id == collaboratorId } }
 
     override fun findByProjectId(projectId: String) =
-        findAll().single { u -> u.company.customers.any { c -> c.projects.any { p -> p.id == projectId } } }
+        findAll().single { user -> user.projects.any { p -> p.id == projectId } }
 
-    override fun findCollaboratorsByUserId(userId: String) =
-        findById(userId)
-            .company
-            .collaborators
-            .toSet()
+    override fun findCollaboratorsByUserId(userId: String) = findById(userId).collaborators.toSet()
 
-    override fun findProjectsByUserId(userId: String)=
-        findById(userId)
-            .company
-            .customers
-            .flatMap { it.projects }
-            .toSet()
-
-    override fun doesUserHaveCustomer(userId: String, customerId: String) =
-        getCustomers(userId).any { it.id == customerId }
+    override fun findProjectsByUserId(userId: String)= findById(userId).projects.toSet()
 
     override fun doesUserHaveProject(userId: String, projectId: String) =
-        getCustomers(userId)
-            .flatMap { it.projects }
-            .any { it.id == projectId }
+        findById(userId).projects.any { it.id == projectId }
 
     override fun doesUserHaveCollaborator(userId: String, collaboratorId: String) =
-        findById(userId)
-            .company
-            .collaborators
-            .any { it.id == collaboratorId }
+        findById(userId).collaborators.any { it.id == collaboratorId }
 
     override fun doesUserHaveWorklog(userId: String, worklog: Worklog) =
-        doesUserHaveProject(userId, worklog.project.id) &&
-            doesUserHaveCollaborator(userId, worklog.collaborator.id)
+        doesUserHaveProject(userId, worklog.project.id) && doesUserHaveCollaborator(userId, worklog.collaborator.id)
 
     override fun isProjectNameUnique(projectName: String, projectId: String, userId: String) =
         findProjectsByUserId(userId)
@@ -64,10 +48,4 @@ class UserRepositoryAdapter(private val userMongoRepository: UserMongoRepository
             .none { it.name == projectName }
 
     private fun findAll(): Collection<User> = userMongoRepository.findAll().map { it.get() }
-
-    private fun getCustomers(userId: String) =
-        findById(userId)
-            .company
-            .customers
-
 }

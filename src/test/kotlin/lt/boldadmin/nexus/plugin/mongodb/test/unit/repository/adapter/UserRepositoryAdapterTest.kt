@@ -53,10 +53,12 @@ class UserRepositoryAdapterTest {
             assertEquals(user.name, firstValue.name)
             assertEquals(user.address, firstValue.address)
             assertEquals(user.email, firstValue.email)
-            assertEquals(user.company, firstValue.company)
+            assertEquals(user.companyName, firstValue.companyName)
             assertEquals(user.lastName, firstValue.lastName)
             assertEquals(user.password, firstValue.password)
             assertEquals(user.role, firstValue.role)
+            assertEquals(user.projects.first(), firstValue.projects.first())
+            assertEquals(user.collaborators.first(), firstValue.collaborators.first())
         }
     }
 
@@ -75,6 +77,15 @@ class UserRepositoryAdapterTest {
         doReturn(true).`when`(userMongoRepositorySpy).existsByEmail(USER_EMAIL)
 
         val actualExists = adapter.existsByEmail(USER_EMAIL)
+
+        assertTrue(actualExists)
+    }
+
+    @Test
+    fun `User exist by company name`() {
+        doReturn(true).`when`(userMongoRepositorySpy).existsByCompanyName(USER_COMPANY_NAME)
+
+        val actualExists = adapter.existsByCompanyName(USER_COMPANY_NAME)
 
         assertTrue(actualExists)
     }
@@ -105,24 +116,6 @@ class UserRepositoryAdapterTest {
         val actualExists = adapter.existsAny()
 
         assertFalse(actualExists)
-    }
-
-    @Test
-    fun `User has customer when ids match`() {
-        doReturn(Optional.of(TypeFactory().createUserClone())).`when`(userMongoRepositorySpy).findById(USER_ID)
-
-        val doesUserHaveCustomer = adapter.doesUserHaveCustomer(USER_ID, CUSTOMER_ID)
-
-        assertTrue(doesUserHaveCustomer)
-    }
-
-    @Test
-    fun `User doesn't have customer when ids don't match`() {
-        doReturn(Optional.of(TypeFactory().createUserClone())).`when`(userMongoRepositorySpy).findById(USER_ID)
-
-        val doesUserHaveCustomer = adapter.doesUserHaveCustomer(USER_ID, "otherId")
-
-        assertFalse(doesUserHaveCustomer)
     }
 
     @Test
@@ -181,9 +174,7 @@ class UserRepositoryAdapterTest {
 
     @Test
     fun `Project name is not unique among User Projects`() {
-        val userClone = TypeFactory().createUserClone().apply {
-            this.company.customers.first().addProject(Project("other id", PROJECT_NAME))
-        }
+        val userClone = UserClone(projects = mutableListOf(Project("other id", PROJECT_NAME)))
         doReturn(Optional.of(userClone)).`when`(userMongoRepositorySpy).findById(USER_ID)
 
         val isProjectNameUnique = adapter.isProjectNameUnique(PROJECT_NAME, PROJECT_ID, USER_ID)
@@ -193,9 +184,8 @@ class UserRepositoryAdapterTest {
 
     @Test
     fun `Project name is unique among User Projects`() {
-        val userClone = TypeFactory().createUserClone().apply {
-            this.company.customers.first().addProject(Project("other id", PROJECT_NAME))
-        }
+        val userClone = UserClone(projects = mutableListOf(Project("other id", PROJECT_NAME)))
+
         doReturn(Optional.of(userClone)).`when`(userMongoRepositorySpy).findById(USER_ID)
 
         val isProjectNameUnique = adapter.isProjectNameUnique("new name", PROJECT_ID, USER_ID)
@@ -306,70 +296,56 @@ class UserRepositoryAdapterTest {
         assertEquals(expectedUser.name, actualUser.name)
         assertEquals(expectedUser.address, actualUser.address)
         assertEquals(expectedUser.email, actualUser.email)
-        assertEquals(expectedUser.company, actualUser.company)
+        assertEquals(expectedUser.companyName, actualUser.companyName)
         assertEquals(expectedUser.lastName, actualUser.lastName)
         assertEquals(expectedUser.password, actualUser.password)
         assertEquals(expectedUser.role, actualUser.role)
+        assertEquals(expectedUser.projects.first().id, actualUser.projects.first().id)
+        assertEquals(expectedUser.collaborators.first().id, actualUser.collaborators.first().id)
+        assertEquals(1, actualUser.projects.size)
+        assertEquals(1, actualUser.collaborators.size)
     }
 
     companion object {
         private val USER_ID = "USER_ID"
-        private val USER_NAME = "USER_NAME"
         private val USER_ADDRESS = Address()
         private val USER_EMAIL = "EMAIL"
-        private val USER_LAST_NAME = "LAST_NAME"
         private val USER_PASSWORD = "PASSWORD"
-        private val USER_ROLE = "ROLE"
+        private val USER_COMPANY_NAME = "USER_COMPANY_NAME"
 
-        private val INTERVAL_ID = "INTERVAL_ID"
-        private val COMPANY_ID = "COMPANY_ID"
-        private val CUSTOMER_ID = "CUSTOMER_ID"
         private val COLLABORATOR_ID = "COLLABORATOR_ID"
         private val PROJECT_ID = "PROJECT_ID"
         private val PROJECT_NAME = "PROJECT_NAME"
-        private val PROJECT_ADDRESS = Address(
-            "Vileikos g. 8",
-            "LT-44404",
-            "Kaunas",
-            Country("Lithuania")
-        )
     }
 
     inner class TypeFactory {
-        fun createUserClone() = UserClone(createCompany()).apply {
+        fun createUserClone() = UserClone().apply {
             id = USER_ID
-            name = USER_NAME
+            name = "USER_NAME"
             address = USER_ADDRESS
             email = USER_EMAIL
-            lastName = USER_LAST_NAME
+            lastName = "LAST_NAME"
             password = USER_PASSWORD
-            role = USER_ROLE
+            role = "ROLE"
+            projects = mutableListOf(createProject())
+            collaborators = mutableListOf(createCollaborator())
         }
 
-        fun createUser() = User(createCompany()).apply {
+        fun createUser() = User().apply {
             id = USER_ID
-            name = USER_NAME
+            name = "USER_NAME"
             address = USER_ADDRESS
             email = USER_EMAIL
-            lastName = USER_LAST_NAME
+            lastName = "LAST_NAME"
             password = USER_PASSWORD
-            role = USER_ROLE
-        }
-
-        private fun createCompany() = Company().apply {
-            id = COMPANY_ID
-            addCustomer(createCustomer(CUSTOMER_ID, createProject()))
-            addCollaborator(createCollaborator())
-        }
-
-        private fun createCustomer(customerId: String, project: Project) = Customer().apply {
-            id = customerId
-            addProject(project)
+            role = "ROLE"
+            companyName = USER_COMPANY_NAME
+            projects = mutableListOf(createProject())
+            collaborators = mutableListOf(createCollaborator())
         }
 
         private fun createProject() = Project(
-            PROJECT_ID, PROJECT_NAME,
-            PROJECT_ADDRESS
+            PROJECT_ID, PROJECT_NAME, Address("Vileikos g. 8", "LT-44404", "Kaunas", Country("Lithuania"))
         )
 
         private fun createCollaborator() = Collaborator().apply { id = COLLABORATOR_ID }
@@ -380,10 +356,8 @@ class UserRepositoryAdapterTest {
                 createCollaborator(),
                 0,
                 workStatus,
-                INTERVAL_ID,
+                "INTERVAL_ID",
                 worklogId
             )
-
     }
-
 }
