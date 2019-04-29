@@ -3,18 +3,24 @@ package lt.boldadmin.nexus.plugin.mongodb.type.entity.clone
 import lt.boldadmin.nexus.api.type.entity.*
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
+import java.util.*
 
 @Document(collection = "user")
 class UserClone(
-
-    @DBRef(lazy = true)
-    internal var company: Company = Company(),
 
     internal var lastName: String = "",
 
     internal var password: String = "",
 
-    internal var role: String = ""
+    internal var role: String = "",
+
+    internal var companyName: String = "",
+
+    @DBRef(lazy = true)
+    internal var collaborators: MutableCollection<Collaborator> = HashSet(),
+
+    @DBRef(lazy = true)
+    internal var projects: MutableCollection<Project> = HashSet()
 
 ): Person() {
 
@@ -24,10 +30,12 @@ class UserClone(
             name = user.name
             email = user.email
             address = user.address
-            company = user.company
+            companyName = user.companyName
             lastName = user.lastName
             password = user.password
             role = user.role
+            user.projects.forEach { this@UserClone.projects.add(it) }
+            user.collaborators.forEach { this@UserClone.collaborators.add(it) }
         }
     }
 
@@ -36,10 +44,11 @@ class UserClone(
         name = this@UserClone.name
         email = this@UserClone.email
         address = this@UserClone.address
-        company = this@UserClone.company
+        companyName = this@UserClone.companyName
         lastName = this@UserClone.lastName
         password = this@UserClone.password
         role = this@UserClone.role
+        this@UserClone.projects.forEach { addProject(it) }
+        this@UserClone.collaborators.forEach { addCollaborator(it) }
     }
-
 }
