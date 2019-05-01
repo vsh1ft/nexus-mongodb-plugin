@@ -345,7 +345,7 @@ class UserRepositoryAdapterTest {
 
         private fun createProject() = Project(
             PROJECT_ID, PROJECT_NAME,
-            PROJECT_LOCATION
+            mutableSetOf(PROJECT_LOCATION)
         )
 
         private fun createCollaborator() = Collaborator().apply { id = COLLABORATOR_ID }
