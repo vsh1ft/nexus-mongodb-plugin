@@ -18,10 +18,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 @RunWith(MockitoJUnitRunner::class)
 class WorklogRepositoryAdapterTest {
@@ -73,7 +70,7 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets workLog by interval id and not by work status ordered by ascending timestamp`() {
+    fun `Gets worklog by interval id and not by work status ordered by ascending timestamp`() {
         doReturn(listOf(createWorklogClone())).`when`(worklogMongoRepositorySpy)
             .findByIntervalIdOrderByTimestampAsc(INTERVAL_ID)
 
@@ -83,7 +80,7 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets workLogs by project id`() {
+    fun `Gets worklogs by project id`() {
         doReturn(listOf(createWorklogClone())).`when`(worklogMongoRepositorySpy)
             .findByProjectId(PROJECT_ID)
 
@@ -109,13 +106,26 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets latest workLog by collaborator id`() {
+    fun `Gets latest worklog by collaborator id`() {
         doReturn(createWorklogClone()).`when`(worklogMongoRepositorySpy)
             .findFirstByCollaboratorIdOrderByTimestampDesc(COLLABORATOR_ID)
 
         val actualWorkLog = adapter.findLatest(COLLABORATOR_ID)
 
         assertWorkLogFieldsAreEqual(actualWorkLog!!)
+    }
+
+    @Test
+    fun `Gets distinguishing interval ids by collaborator id`() {
+        val worklogClone1 = createWorklogClone()
+        val worklogClone2 = createWorklogClone()
+        doReturn(listOf(worklogClone1, worklogClone2))
+            .`when`(worklogMongoRepositorySpy)
+            .findByCollaboratorId(COLLABORATOR_ID)
+
+        val intervalIds = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
+
+        assertEquals(intervalIds, listOf(INTERVAL_ID))
     }
 
     @Test
@@ -156,9 +166,9 @@ class WorklogRepositoryAdapterTest {
         val worklogClone = createWorklogClone()
         doReturn(listOf(worklogClone, worklogClone)).`when`(worklogMongoRepositorySpy).findByIntervalId(INTERVAL_ID)
 
-        val hasWorkLogInterval = adapter.doesCollaboratorHaveWorklogInterval(COLLABORATOR_ID, INTERVAL_ID)
+        val hasWorklogInterval = adapter.doesCollaboratorHaveWorklogInterval(COLLABORATOR_ID, INTERVAL_ID)
 
-        assertTrue(hasWorkLogInterval)
+        assertTrue(hasWorklogInterval)
     }
 
     @Test

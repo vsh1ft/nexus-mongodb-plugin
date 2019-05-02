@@ -26,6 +26,13 @@ class WorklogRepositoryAdapter(
     override fun findByCollaboratorId(collaboratorId: String): Collection<Worklog> =
         worklogMongoRepository.findByCollaboratorId(collaboratorId).map { (it).get() }
 
+    override fun findIntervalIdsByCollaboratorId(collaboratorId: String): Collection<String> {
+        return worklogMongoRepository.findByCollaboratorId(collaboratorId)
+            .map { it.intervalId }
+            .distinct()
+            .toList()
+    }
+
     override fun findByIntervalIdOrderByLatest(intervalId: String): Collection<Worklog> =
         worklogMongoRepository.findByIntervalIdOrderByTimestampAsc(intervalId).map { it.get() }
 
