@@ -33,6 +33,13 @@ class WorklogRepositoryAdapter(
             .toList()
     }
 
+    override fun findIntervalIdsByProjectId(projectId: String): Collection<String> {
+        return worklogMongoRepository.findByProjectId(projectId)
+            .map { it.intervalId }
+            .distinct()
+            .toList()
+    }
+
     override fun findByIntervalIdOrderByLatest(intervalId: String): Collection<Worklog> =
         worklogMongoRepository.findByIntervalIdOrderByTimestampAsc(intervalId).map { it.get() }
 

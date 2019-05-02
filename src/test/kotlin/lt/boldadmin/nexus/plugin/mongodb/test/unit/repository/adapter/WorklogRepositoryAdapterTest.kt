@@ -129,6 +129,19 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
+    fun `Gets distinguishing interval ids by project id`() {
+        val worklogClone1 = createWorklogClone()
+        val worklogClone2 = createWorklogClone()
+        doReturn(listOf(worklogClone1, worklogClone2))
+            .`when`(worklogMongoRepositorySpy)
+            .findByProjectId(PROJECT_ID)
+
+        val intervalIds = adapter.findIntervalIdsByProjectId(PROJECT_ID)
+
+        assertEquals(intervalIds, listOf(INTERVAL_ID))
+    }
+
+    @Test
     fun `Provides null when worklog does not exist`() {
         doReturn(null).`when`(worklogMongoRepositorySpy)
             .findFirstByCollaboratorIdOrderByTimestampDesc(COLLABORATOR_ID)
