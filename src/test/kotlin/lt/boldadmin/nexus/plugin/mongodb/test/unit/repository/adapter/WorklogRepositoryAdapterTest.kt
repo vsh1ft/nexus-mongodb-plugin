@@ -115,17 +115,30 @@ class WorklogRepositoryAdapterTest {
         assertWorklogFieldsAreEqual(actualWorklog!!)
     }
 
-    @Test
-    fun `Gets distinguishing interval ids by collaborator id`() {
-        val worklogClone = createWorklogClone()
-        doReturn(listOf(worklogClone, worklogClone))
-            .`when`(worklogMongoRepositorySpy)
-            .findByCollaboratorId(COLLABORATOR_ID)
+//    @Test
+//    fun `Gets distinguishing interval ids by collaborator id`() {
+//        val query = Query().apply {
+//            addCriteria(Criteria.where("collaborator.\$id").`is`(COLLABORATOR_ID))
+//            addCriteria(Criteria.where("workStatus").`is`(WorkStatus.START))
+//        }
+//        doReturn(listOf(createWorklog())).`when`(templateStub).find(query, Worklog::class.java)
+//
+//        val intervalIds = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
+//
+//        assertEquals(listOf(INTERVAL_ID), intervalIds)
+//
+//    }
 
-        val intervalIds = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
-
-        assertEquals(intervalIds, listOf(INTERVAL_ID))
-    }
+//    @Test
+//    fun `tets` (){
+//        val matchStage = Aggregation.match(Criteria("collaborator.\$id").`is`(COLLABORATOR_ID))
+//        val projectStage = Aggregation.project("intervalId")
+//
+//        val aggregation = Aggregation.newAggregation(matchStage, projectStage)
+//        val intervalIds =adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
+//
+//        assertEquals(listOf(INTERVAL_ID), intervalIds)
+//    }
 
     @Test
     fun `Gets distinguishing interval ids by project id`() {
@@ -136,7 +149,7 @@ class WorklogRepositoryAdapterTest {
 
         val intervalIds = adapter.findIntervalIdsByProjectId(PROJECT_ID)
 
-        assertEquals(intervalIds, listOf(INTERVAL_ID))
+        assertEquals(listOf(INTERVAL_ID), intervalIds)
     }
 
     @Test

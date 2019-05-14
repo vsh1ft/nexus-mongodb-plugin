@@ -3,7 +3,7 @@ package lt.boldadmin.nexus.plugin.mongodb.repository
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.springframework.data.mongodb.repository.MongoRepository
 
-interface WorklogMongoRepository : MongoRepository<WorklogClone, String> {
+interface WorklogMongoRepository: MongoRepository<WorklogClone, String> {
 
     fun findByCollaboratorId(collaboratorId: String): Collection<WorklogClone>
 
