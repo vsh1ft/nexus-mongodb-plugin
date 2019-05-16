@@ -5,10 +5,13 @@ import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.Worklog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
+import lt.boldadmin.nexus.plugin.mongodb.aggregationModel.WorklogIntervals
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.WorklogRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
+import org.bson.Document
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,7 +19,12 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.aggregation.Aggregation
+import org.springframework.data.mongodb.core.aggregation.Aggregation.match
+import org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation
+import org.springframework.data.mongodb.core.aggregation.AggregationResults
 import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query
 import kotlin.test.*
 
@@ -115,30 +123,42 @@ class WorklogRepositoryAdapterTest {
         assertWorklogFieldsAreEqual(actualWorklog!!)
     }
 
-//    @Test
-//    fun `Gets distinguishing interval ids by collaborator id`() {
-//        val query = Query().apply {
-//            addCriteria(Criteria.where("collaborator.\$id").`is`(COLLABORATOR_ID))
-//            addCriteria(Criteria.where("workStatus").`is`(WorkStatus.START))
-//        }
-//        doReturn(listOf(createWorklog())).`when`(templateStub).find(query, Worklog::class.java)
-//
-//        val intervalIds = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
-//
-//        assertEquals(listOf(INTERVAL_ID), intervalIds)
-//
-//    }
 
-//    @Test
-//    fun `tets` (){
-//        val matchStage = Aggregation.match(Criteria("collaborator.\$id").`is`(COLLABORATOR_ID))
-//        val projectStage = Aggregation.project("intervalId")
-//
-//        val aggregation = Aggregation.newAggregation(matchStage, projectStage)
-//        val intervalIds =adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
-//
-//        assertEquals(listOf(INTERVAL_ID), intervalIds)
-//    }
+    @Test
+    fun `Gets distinct interval ids by  other collaborator id`() {
+        val IdsObject = AggregationResults(listOf(createIntervalIds()), Document())
+
+        doReturn(IdsObject).`when`(templateStub)
+            .aggregate(any(), eq(Worklog::class.java), eq(WorklogIntervals::class.java))
+
+        val listas = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
+
+        assertEquals(listOf(INTERVAL_ID), listas)
+
+    }
+
+
+    @Test
+    fun `Gets distinct interval ids by  other collaborator2 id`(){
+        val IdsObject = AggregationResults(emptyList<String>(), Document())
+        val agg = newAggregation(match(Criteria.where("collaborator.\$id").`is`(COLLABORATOR_ID)
+            .andOperator(where("workStatus").`is`("START"))))
+
+
+
+        doReturn(IdsObject).`when`(templateStub)
+            .aggregate(any(), eq(Worklog::class.java), eq(WorklogIntervals::class.java))
+
+        adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
+
+        argumentCaptor<Aggregation>().apply {
+            verify(templateStub).aggregate(capture(), eq(Worklog::class.java), eq(WorklogIntervals::class.java))
+
+            Assert.assertEquals(agg.toString(), firstValue.toString())
+        }
+
+
+    }
 
     @Test
     fun `Gets distinguishing interval ids by project id`() {
@@ -263,6 +283,8 @@ class WorklogRepositoryAdapterTest {
         WorklogClone(PROJECT, collaborator, TIMESTAMP, WORK_STATUS, INTERVAL_ID, WORK_LOG_ID)
 
     private fun createCollaborator(id: String = COLLABORATOR_ID) = Collaborator().apply { this.id = id }
+
+    private fun createIntervalIds() = WorklogIntervals().apply { this.intervalId = INTERVAL_ID }
 
     companion object {
         private val COLLABORATOR_ID = "5a3020603004e0472284a428"
