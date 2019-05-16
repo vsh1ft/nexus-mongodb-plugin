@@ -7,8 +7,8 @@ import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.Aggregation.match
+import org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 
@@ -30,45 +30,35 @@ class WorklogRepositoryAdapter(
         worklogMongoRepository.findByCollaboratorId(collaboratorId).map { (it).get() }
 
     override fun findIntervalIdsByCollaboratorId(collaboratorId: String): Collection<String> {
-
-        val agg = Aggregation.newAggregation(
+        val aggregation = newAggregation(
             match(
                 Criteria.where("collaborator.\$id").`is`(collaboratorId)
                     .andOperator(Criteria.where("workStatus").`is`("START"))
             )
         )
-
-
-        val aggregateResult = template
-            .aggregate(agg,
-                Worklog::class.java, WorklogIntervals::class.java)
-            .mappedResults.map { it.intervalId }.toList()
-
-        return aggregateResult
-
-
-//        val intervalIdsAggregation = newAggregation(
-//            match(
-//                Criteria.where("collaborator.\$id").`is`(collaboratorId)
-//                    .andOperator(where("workStatus").`is`("START"))
-//            ),
-//            project("intervalId")
-//        )
-//        val intervalIdsAggregationResults = template.aggregate(
-//            intervalIdsAggregation,
-//            Worklog::class.java,
-//            WorklogIntervals::class.java
-//        )
-//
-//        return intervalIdsAggregationResults.mappedResults.map { it.intervalId }.toList()
-
+        val aggregatioResults = template
+            .aggregate(
+                aggregation,
+                Worklog::class.java,
+                WorklogIntervals::class.java
+            )
+        return aggregatioResults.mappedResults.map { it.intervalId }.toList()
     }
 
     override fun findIntervalIdsByProjectId(projectId: String): Collection<String> {
-        return worklogMongoRepository.findByProjectId(projectId)
-            .map { it.intervalId }
-            .distinct()
-            .toList()
+        val aggregation = newAggregation(
+            match(
+                Criteria.where("project.\$id").`is`(projectId)
+                    .andOperator(Criteria.where("workStatus").`is`("START"))
+            )
+        )
+        val aggregatioResults = template
+            .aggregate(
+                aggregation,
+                Worklog::class.java,
+                WorklogIntervals::class.java
+            )
+        return aggregatioResults.mappedResults.map { it.intervalId }.toList()
     }
 
     override fun findByIntervalIdOrderByLatest(intervalId: String): Collection<Worklog> =
