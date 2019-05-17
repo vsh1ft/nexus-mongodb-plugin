@@ -5,7 +5,7 @@ import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.Worklog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
-import lt.boldadmin.nexus.plugin.mongodb.aggregationModel.WorklogIntervals
+import lt.boldadmin.nexus.plugin.mongodb.aggregation.WorklogIntervals
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.WorklogRepositoryAdapter
@@ -123,59 +123,44 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets interval ids from aggregation results`() {
-        val aggregationResults = AggregationResults(listOf(createIntervalId()), Document())
-        doReturn(aggregationResults).`when`(templateStub)
-            .aggregate(any(), eq(Worklog::class.java), eq(WorklogIntervals::class.java))
-        val expectedIntervalIds = aggregationResults.mappedResults.map { it.intervalId }.toList()
+    fun `Gets interval ids from aggregation results by collaborator id`() {
+        val expectedIntervalIds = getIntervalIdsFromAggregationResults()
 
-        val intervalIds = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
+        val intervalIds = adapter.findIntervalIdsByCollaboratorId("id")
 
         assertEquals(expectedIntervalIds, intervalIds)
     }
 
     @Test
-    fun `Gets interval ids by collaborator id and work status START`() {
-        val aggregationResults = AggregationResults(emptyList<String>(), Document())
-        val aggregation = newAggregation(
-            match(
-                Criteria.where("collaborator.\$id").`is`(COLLABORATOR_ID)
-                    .andOperator(where("workStatus").`is`("START"))
-            )
-        )
+    fun `Gets interval ids from aggregation results by project id`() {
+        val expectedIntervalIds = getIntervalIdsFromAggregationResults()
 
-        doReturn(aggregationResults).`when`(templateStub)
-            .aggregate(any(), eq(Worklog::class.java), eq(WorklogIntervals::class.java))
+        val intervalIds = adapter.findIntervalIdsByProjectId("id")
+
+        assertEquals(expectedIntervalIds, intervalIds)
+    }
+
+
+    @Test
+    fun `Gets interval ids by collaborator id and work status START`() {
+        val expectedAggregation = aggregation("collaborator.\$id", COLLABORATOR_ID)
+        getIntervalIdsFromAggregationResults()
 
         adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
+        val capturedAggregation = captureAggregation()
 
-        argumentCaptor<Aggregation>().apply {
-            verify(templateStub).aggregate(capture(), eq(Worklog::class.java), eq(WorklogIntervals::class.java))
-
-            assertEquals(aggregation.toString(), firstValue.toString())
-        }
+        assertEquals(expectedAggregation, capturedAggregation)
     }
 
     @Test
     fun `Gets interval ids by project id and work status START`() {
-        val aggregationResults = AggregationResults(emptyList<String>(), Document())
-        val aggregation = newAggregation(
-            match(
-                Criteria.where("project.\$id").`is`(PROJECT_ID)
-                    .andOperator(where("workStatus").`is`("START"))
-            )
-        )
-
-        doReturn(aggregationResults).`when`(templateStub)
-            .aggregate(any(), eq(Worklog::class.java), eq(WorklogIntervals::class.java))
+        val expectedAggregation = aggregation("project.\$id", PROJECT_ID)
+        getIntervalIdsFromAggregationResults()
 
         adapter.findIntervalIdsByProjectId(PROJECT_ID)
+        val capturedAggregation = captureAggregation()
 
-        argumentCaptor<Aggregation>().apply {
-            verify(templateStub).aggregate(capture(), eq(Worklog::class.java), eq(WorklogIntervals::class.java))
-
-            assertEquals(aggregation.toString(), firstValue.toString())
-        }
+        assertEquals(expectedAggregation, capturedAggregation)
     }
 
     @Test
@@ -291,6 +276,33 @@ class WorklogRepositoryAdapterTest {
     private fun createCollaborator(id: String = COLLABORATOR_ID) = Collaborator().apply { this.id = id }
 
     private fun createIntervalId() = WorklogIntervals().apply { this.intervalId = INTERVAL_ID }
+
+    private fun getIntervalIdsFromAggregationResults(): Collection<String> {
+        val aggregationResults = AggregationResults(listOf(createIntervalId()), Document())
+        doReturn(aggregationResults).`when`(templateStub)
+            .aggregate(any(), eq(Worklog::class.java), eq(WorklogIntervals::class.java))
+
+        return aggregationResults.mappedResults.map { it.intervalId }.toList()
+    }
+
+    private fun aggregation(key: String, id: String): String {
+        val aggregation = newAggregation(
+            match(
+                where(key).`is`(id)
+                    .andOperator(where("workStatus").`is`("START"))
+            )
+        )
+        return aggregation.toString()
+    }
+
+    private fun captureAggregation(): String {
+        var capturedValue = ""
+        argumentCaptor<Aggregation>().apply {
+            verify(templateStub).aggregate(capture(), eq(Worklog::class.java), eq(WorklogIntervals::class.java))
+            capturedValue = firstValue.toString()
+        }
+        return capturedValue
+    }
 
     companion object {
         private val COLLABORATOR_ID = "5a3020603004e0472284a428"

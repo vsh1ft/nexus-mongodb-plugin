@@ -2,7 +2,7 @@ package lt.boldadmin.nexus.plugin.mongodb.repository.adapter
 
 import lt.boldadmin.nexus.api.repository.WorklogRepository
 import lt.boldadmin.nexus.api.type.entity.Worklog
-import lt.boldadmin.nexus.plugin.mongodb.aggregationModel.WorklogIntervals
+import lt.boldadmin.nexus.plugin.mongodb.aggregation.WorklogIntervals
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.springframework.data.domain.Sort
@@ -29,37 +29,11 @@ class WorklogRepositoryAdapter(
     override fun findByCollaboratorId(collaboratorId: String): Collection<Worklog> =
         worklogMongoRepository.findByCollaboratorId(collaboratorId).map { (it).get() }
 
-    override fun findIntervalIdsByCollaboratorId(collaboratorId: String): Collection<String> {
-        val aggregation = newAggregation(
-            match(
-                Criteria.where("collaborator.\$id").`is`(collaboratorId)
-                    .andOperator(Criteria.where("workStatus").`is`("START"))
-            )
-        )
-        val aggregatioResults = template
-            .aggregate(
-                aggregation,
-                Worklog::class.java,
-                WorklogIntervals::class.java
-            )
-        return aggregatioResults.mappedResults.map { it.intervalId }.toList()
-    }
+    override fun findIntervalIdsByCollaboratorId(collaboratorId: String) =
+        findIntervalIdsByEntityType(collaboratorId, "collaborator.\$id")
 
-    override fun findIntervalIdsByProjectId(projectId: String): Collection<String> {
-        val aggregation = newAggregation(
-            match(
-                Criteria.where("project.\$id").`is`(projectId)
-                    .andOperator(Criteria.where("workStatus").`is`("START"))
-            )
-        )
-        val aggregatioResults = template
-            .aggregate(
-                aggregation,
-                Worklog::class.java,
-                WorklogIntervals::class.java
-            )
-        return aggregatioResults.mappedResults.map { it.intervalId }.toList()
-    }
+    override fun findIntervalIdsByProjectId(projectId: String) =
+        findIntervalIdsByEntityType(projectId, "project.\$id")
 
     override fun findByIntervalIdOrderByLatest(intervalId: String): Collection<Worklog> =
         worklogMongoRepository.findByIntervalIdOrderByTimestampAsc(intervalId).map { it.get() }
@@ -88,5 +62,21 @@ class WorklogRepositoryAdapter(
 
     private fun findByIntervalId(intervalId: String): Collection<Worklog> =
         worklogMongoRepository.findByIntervalId(intervalId).map { it.get() }
+
+    private fun findIntervalIdsByEntityType(id: String, key: String): Collection<String> {
+        val aggregation = newAggregation(
+            match(
+                Criteria.where(key).`is`(id)
+                    .andOperator(Criteria.where("workStatus").`is`("START"))
+            )
+        )
+        val aggregationResults = template
+            .aggregate(
+                aggregation,
+                Worklog::class.java,
+                WorklogIntervals::class.java
+            )
+        return aggregationResults.mappedResults.map { it.intervalId }.toList()
+    }
 
 }

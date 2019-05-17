@@ -1,10 +1,9 @@
-package lt.boldadmin.nexus.plugin.mongodb.aggregationModel
+package lt.boldadmin.nexus.plugin.mongodb.aggregation
 
 import org.springframework.data.mongodb.core.mapping.Field
 
 class WorklogIntervals(
 
-  @Field
+    @Field
     var intervalId: String = ""
-
-    )
+)
