@@ -34,7 +34,7 @@ class WorklogRepositoryAdapter(
 
     override fun findIntervalIdsByProjectId(projectId: String) = findWorklogIntervalIds("project.\$id", projectId)
 
-    override fun findByIntervalIdOrderByLatest(intervalId: String): Collection<Worklog> =
+    override fun findByIntervalIdOrderByLatest(intervalId: String) =
         worklogMongoRepository.findByIntervalIdOrderByTimestampAsc(intervalId).map { it.get() }
 
     override fun findLatest(collaboratorId: String, projectId: String): Worklog? {
@@ -70,7 +70,8 @@ class WorklogRepositoryAdapter(
         ).mappedResults.map { it.intervalId }.toList()
     }
 
-    private fun createAggregation(key: String, id: String) = newAggregation(
+    private fun createAggregation(key: String, id: String) =
+        newAggregation(
             match(where(key).`is`(id).andOperator(where("workStatus").`is`("START")))
         )
 }
