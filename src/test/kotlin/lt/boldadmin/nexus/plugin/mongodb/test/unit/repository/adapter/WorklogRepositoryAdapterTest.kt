@@ -18,12 +18,8 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.aggregation.Aggregation
-import org.springframework.data.mongodb.core.aggregation.Aggregation.match
-import org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationResults
 import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query
 import kotlin.test.*
 
@@ -124,40 +120,20 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Gets aggregated interval ids by collaborator id`() {
-        val expectedIntervalIds = getStubedAggregationResults().mappedResults.map { it.intervalId }.toList()
+        stubWorklogIntervalForAggregation()
 
         val actualIntervalIds = adapter.findIntervalIdsByCollaboratorId("id")
 
-        assertEquals(expectedIntervalIds, actualIntervalIds)
+        assertEquals(listOf(INTERVAL_ID), actualIntervalIds)
     }
 
     @Test
     fun `Gets aggregated interval ids by project id`() {
-        val expectedIntervalIds = getStubedAggregationResults().mappedResults.map { it.intervalId }.toList()
+        stubWorklogIntervalForAggregation()
 
         val actualIntervalIds = adapter.findIntervalIdsByProjectId("id")
 
-        assertEquals(expectedIntervalIds, actualIntervalIds)
-    }
-
-    @Test
-    fun `Gets interval ids by collaborator id and started work status`() {
-        val expectedAggregation = createAggregation("collaborator.\$id", COLLABORATOR_ID)
-        getStubedAggregationResults()
-
-        adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
-
-        assertEquals(expectedAggregation, getCapturedAggregation())
-    }
-
-    @Test
-    fun `Gets interval ids by project id and started work status`() {
-        val expectedAggregation = createAggregation("project.\$id", PROJECT_ID)
-        getStubedAggregationResults()
-
-        adapter.findIntervalIdsByProjectId(PROJECT_ID)
-
-        assertEquals(expectedAggregation, getCapturedAggregation())
+        assertEquals(listOf(INTERVAL_ID), actualIntervalIds)
     }
 
     @Test
@@ -274,28 +250,10 @@ class WorklogRepositoryAdapterTest {
 
     private fun createWorklogInterval() = WorklogInterval().apply { this.intervalId = INTERVAL_ID }
 
-    private fun getStubedAggregationResults(): AggregationResults<WorklogInterval> {
+    private fun stubWorklogIntervalForAggregation() {
         val aggregationResults = AggregationResults(listOf(createWorklogInterval()), Document())
         doReturn(aggregationResults).`when`(templateStub)
             .aggregate(any(), eq(Worklog::class.java), eq(WorklogInterval::class.java))
-
-        return aggregationResults
-    }
-
-    private fun createAggregation(key: String, id: String) = newAggregation(
-        match(
-            where(key).`is`(id)
-                .andOperator(where("workStatus").`is`("START"))
-        )
-    ).toString()
-
-    private fun getCapturedAggregation(): String {
-        var capturedValue = ""
-        argumentCaptor<Aggregation>().apply {
-            verify(templateStub).aggregate(capture(), eq(Worklog::class.java), eq(WorklogInterval::class.java))
-            capturedValue = firstValue.toString()
-        }
-        return capturedValue
     }
 
     companion object {
