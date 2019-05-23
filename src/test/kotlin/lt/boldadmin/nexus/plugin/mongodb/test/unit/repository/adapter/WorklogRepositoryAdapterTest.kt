@@ -5,10 +5,10 @@ import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.Worklog
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
-import lt.boldadmin.nexus.plugin.mongodb.aggregation.WorklogInterval
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.WorklogRepositoryAdapter
+import lt.boldadmin.nexus.plugin.mongodb.type.aggregation.WorklogInterval
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.bson.Document
 import org.junit.Before

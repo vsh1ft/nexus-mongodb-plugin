@@ -2,8 +2,8 @@ package lt.boldadmin.nexus.plugin.mongodb.repository.adapter
 
 import lt.boldadmin.nexus.api.repository.WorklogRepository
 import lt.boldadmin.nexus.api.type.entity.Worklog
-import lt.boldadmin.nexus.plugin.mongodb.aggregation.WorklogInterval
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
+import lt.boldadmin.nexus.plugin.mongodb.type.aggregation.WorklogInterval
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
