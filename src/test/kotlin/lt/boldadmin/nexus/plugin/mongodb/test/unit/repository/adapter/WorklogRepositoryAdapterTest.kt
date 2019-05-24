@@ -280,12 +280,13 @@ class WorklogRepositoryAdapterTest {
             .aggregate(any(), eq(Worklog::class.java), eq(WorklogInterval::class.java))
     }
 
-    private fun createAggregation(key: String, id: String) = newAggregation(
-        match(
-            where(key).`is`(id)
-                .andOperator(where("workStatus").`is`("START"))
-        )
-    ).toString()
+    private fun createAggregation(key: String, id: String) =
+        newAggregation(
+            match(
+                where(key).`is`(id)
+                    .andOperator(where("workStatus").`is`("START"))
+            )
+        ).toString()
 
     private fun getCapturedAggregation(): String {
         var capturedValue = ""
