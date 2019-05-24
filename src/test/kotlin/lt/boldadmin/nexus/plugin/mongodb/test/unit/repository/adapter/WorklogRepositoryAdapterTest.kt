@@ -18,8 +18,12 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.aggregation.Aggregation
+import org.springframework.data.mongodb.core.aggregation.Aggregation.match
+import org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationResults
 import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query
 import kotlin.test.*
 
@@ -137,6 +141,26 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
+    fun `Gets interval ids by collaborator id and started work status`() {
+        val expectedAggregation = createAggregation("collaborator.\$id", COLLABORATOR_ID)
+        stubWorklogIntervalForAggregation()
+
+        adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
+
+        assertEquals(expectedAggregation, getCapturedAggregation())
+    }
+
+    @Test
+    fun `Gets interval ids by project id and started work status`() {
+        val expectedAggregation = createAggregation("project.\$id", PROJECT_ID)
+        stubWorklogIntervalForAggregation()
+
+        adapter.findIntervalIdsByProjectId(PROJECT_ID)
+
+        assertEquals(expectedAggregation, getCapturedAggregation())
+    }
+
+    @Test
     fun `Provides null when worklog does not exist`() {
         doReturn(null).`when`(worklogMongoRepositorySpy)
             .findFirstByCollaboratorIdOrderByTimestampDesc(COLLABORATOR_ID)
@@ -202,7 +226,7 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Confirms that collaborator has work log intervals`() {
+    fun `Confirms that collaborator has worklog intervals`() {
         val worklogClone = createWorklogClone()
         doReturn(listOf(worklogClone, worklogClone)).`when`(worklogMongoRepositorySpy).findByIntervalId(INTERVAL_ID)
 
@@ -254,6 +278,22 @@ class WorklogRepositoryAdapterTest {
         val aggregationResults = AggregationResults(listOf(createWorklogInterval()), Document())
         doReturn(aggregationResults).`when`(templateStub)
             .aggregate(any(), eq(Worklog::class.java), eq(WorklogInterval::class.java))
+    }
+
+    private fun createAggregation(key: String, id: String) = newAggregation(
+        match(
+            where(key).`is`(id)
+                .andOperator(where("workStatus").`is`("START"))
+        )
+    ).toString()
+
+    private fun getCapturedAggregation(): String {
+        var capturedValue = ""
+        argumentCaptor<Aggregation>().apply {
+            verify(templateStub).aggregate(capture(), eq(Worklog::class.java), eq(WorklogInterval::class.java))
+            capturedValue = firstValue.toString()
+        }
+        return capturedValue
     }
 
     companion object {
