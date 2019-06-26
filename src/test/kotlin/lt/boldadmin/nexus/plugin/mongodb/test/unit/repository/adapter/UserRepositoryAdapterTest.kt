@@ -1,8 +1,10 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockitokotlin2.*
 import lt.boldadmin.nexus.api.type.entity.*
-import lt.boldadmin.nexus.api.type.valueobject.*
+import lt.boldadmin.nexus.api.type.valueobject.Address
+import lt.boldadmin.nexus.api.type.valueobject.Location
+import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.UserMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.UserClone

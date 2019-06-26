@@ -1,6 +1,6 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockitokotlin2.*
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.Worklog
@@ -289,7 +289,7 @@ class WorklogRepositoryAdapterTest {
         ).toString()
 
     private fun getCapturedAggregation(): String {
-        var capturedValue = ""
+        var capturedValue: String
         argumentCaptor<Aggregation>().apply {
             verify(templateStub).aggregate(capture(), eq(Worklog::class.java), eq(WorklogInterval::class.java))
             capturedValue = firstValue.toString()

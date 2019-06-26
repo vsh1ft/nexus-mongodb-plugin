@@ -1,11 +1,11 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.verify
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.valueobject.Location
-import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.ProjectRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.ProjectMongoRepository
+import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.ProjectRepositoryAdapter
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
