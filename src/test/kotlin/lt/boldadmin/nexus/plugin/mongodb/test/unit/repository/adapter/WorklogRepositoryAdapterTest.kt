@@ -289,7 +289,7 @@ class WorklogRepositoryAdapterTest {
         ).toString()
 
     private fun getCapturedAggregation(): String {
-        var capturedValue: String
+        var capturedValue = ""
         argumentCaptor<Aggregation>().apply {
             verify(templateStub).aggregate(capture(), eq(Worklog::class.java), eq(WorklogInterval::class.java))
             capturedValue = firstValue.toString()
