@@ -3,6 +3,7 @@ package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.verify
 import lt.boldadmin.nexus.api.type.entity.Project
+import lt.boldadmin.nexus.api.type.valueobject.Coordinates
 import lt.boldadmin.nexus.api.type.valueobject.Location
 import lt.boldadmin.nexus.plugin.mongodb.repository.ProjectMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.ProjectRepositoryAdapter
@@ -64,7 +65,7 @@ class ProjectRepositoryAdapterTest {
         private fun createProject() = Project().apply {
             id = PROJECT_ID
             name = PROJECT_NAME
-            locations.add(Location(1.1, 1.1))
+            locations.add(Location(Coordinates(1.1, 1.1)))
         }
     }
 

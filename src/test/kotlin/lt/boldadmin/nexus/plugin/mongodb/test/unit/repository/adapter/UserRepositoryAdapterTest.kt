@@ -316,7 +316,7 @@ class UserRepositoryAdapterTest {
         private val COLLABORATOR_ID = "COLLABORATOR_ID"
         private val PROJECT_ID = "PROJECT_ID"
         private val PROJECT_NAME = "PROJECT_NAME"
-        private val PROJECT_LOCATION = Location(1.1, 2.2)
+        private val PROJECT_LOCATION = Location(Coordinates(1.1, 2.2))
     }
 
     inner class TypeFactory {
