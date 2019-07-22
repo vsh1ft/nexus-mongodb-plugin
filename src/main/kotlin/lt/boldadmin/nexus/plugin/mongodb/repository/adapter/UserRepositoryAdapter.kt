@@ -31,7 +31,7 @@ class UserRepositoryAdapter(private val userMongoRepository: UserMongoRepository
 
     override fun findCollaboratorsByUserId(userId: String) = findById(userId).collaborators.toSet()
 
-    override fun findProjectsByUserId(userId: String)= findById(userId).projects.toSet()
+    override fun findProjectsByUserId(userId: String) = findById(userId).projects.toSet()
 
     override fun doesUserHaveProject(userId: String, projectId: String) =
         findById(userId).projects.any { it.id == projectId }
