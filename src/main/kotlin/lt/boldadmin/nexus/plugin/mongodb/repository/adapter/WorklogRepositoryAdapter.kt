@@ -27,7 +27,7 @@ class WorklogRepositoryAdapter(
         worklogMongoRepository.findByProjectId(projectId).map { it.get() }
 
     override fun findByCollaboratorId(collaboratorId: String): Collection<Worklog> =
-        worklogMongoRepository.findByCollaboratorId(collaboratorId).map { (it).get() }
+        worklogMongoRepository.findByCollaboratorId(collaboratorId).map { it.get() }
 
     override fun findIntervalIdsByCollaboratorId(collaboratorId: String) =
         findWorklogIntervalIds("collaborator.\$id", collaboratorId)
