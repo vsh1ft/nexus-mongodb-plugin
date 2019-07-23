@@ -1,5 +1,7 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 
+import com.mongodb.client.DistinctIterable
+import com.mongodb.client.MongoCollection
 import com.nhaarman.mockito_kotlin.*
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Project
@@ -8,7 +10,6 @@ import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.WorklogRepositoryAdapter
-import lt.boldadmin.nexus.plugin.mongodb.type.aggregation.WorklogInterval
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.bson.Document
 import org.junit.Before
@@ -18,10 +19,6 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.aggregation.Aggregation
-import org.springframework.data.mongodb.core.aggregation.Aggregation.match
-import org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation
-import org.springframework.data.mongodb.core.aggregation.AggregationResults
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query
@@ -68,30 +65,11 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets worklogs by collaborator id`() {
-        doReturn(listOf(createWorklogClone())).`when`(worklogMongoRepositorySpy).findByCollaboratorId(COLLABORATOR_ID)
-
-        val actualWorklogs = adapter.findByCollaboratorId(COLLABORATOR_ID)
-
-        assertWorklogFieldsAreEqual(actualWorklogs.single())
-    }
-
-    @Test
     fun `Gets worklog by interval id and not by work status ordered by ascending timestamp`() {
         doReturn(listOf(createWorklogClone())).`when`(worklogMongoRepositorySpy)
             .findByIntervalIdOrderByTimestampAsc(INTERVAL_ID)
 
         val actualWorklogs = adapter.findByIntervalIdOrderByLatest(INTERVAL_ID)
-
-        assertWorklogFieldsAreEqual(actualWorklogs.single())
-    }
-
-    @Test
-    fun `Gets worklogs by project id`() {
-        doReturn(listOf(createWorklogClone())).`when`(worklogMongoRepositorySpy)
-            .findByProjectId(PROJECT_ID)
-
-        val actualWorklogs = adapter.findByProjectId(PROJECT_ID)
 
         assertWorklogFieldsAreEqual(actualWorklogs.single())
     }
@@ -123,41 +101,21 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets aggregated interval ids by collaborator id`() {
-        stubWorklogIntervalForAggregation()
+    fun `Gets interval ids by collaborator id`() {
+        stubMongoTemplateForWorklogIntervalIds("collaborator.\$id", COLLABORATOR_ID)
 
-        val actualIntervalIds = adapter.findIntervalIdsByCollaboratorId("id")
-
-        assertEquals(listOf(INTERVAL_ID), actualIntervalIds)
-    }
-
-    @Test
-    fun `Gets aggregated interval ids by project id`() {
-        stubWorklogIntervalForAggregation()
-
-        val actualIntervalIds = adapter.findIntervalIdsByProjectId("id")
+        val actualIntervalIds = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
 
         assertEquals(listOf(INTERVAL_ID), actualIntervalIds)
     }
 
     @Test
-    fun `Gets interval ids by collaborator id and started work status`() {
-        val expectedAggregation = createAggregation("collaborator.\$id", COLLABORATOR_ID)
-        stubWorklogIntervalForAggregation()
+    fun `Gets interval ids by project id`() {
+        stubMongoTemplateForWorklogIntervalIds("project.\$id", PROJECT_ID)
 
-        adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
+        val actualIntervalIds = adapter.findIntervalIdsByProjectId(PROJECT_ID)
 
-        assertEquals(expectedAggregation, getCapturedAggregation())
-    }
-
-    @Test
-    fun `Gets interval ids by project id and started work status`() {
-        val expectedAggregation = createAggregation("project.\$id", PROJECT_ID)
-        stubWorklogIntervalForAggregation()
-
-        adapter.findIntervalIdsByProjectId(PROJECT_ID)
-
-        assertEquals(expectedAggregation, getCapturedAggregation())
+        assertEquals(listOf(INTERVAL_ID), actualIntervalIds)
     }
 
     @Test
@@ -267,35 +225,23 @@ class WorklogRepositoryAdapterTest {
 
     private fun createWorklog() = Worklog(PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, WORKLOG_ID)
 
+    private fun stubMongoTemplateForWorklogIntervalIds(queryKey: String, queryValue: String) {
+        val collectionStub = mock<MongoCollection<Document>>()
+        val iterableStub = mock<DistinctIterable<Collection<String>>>()
+        val queryObject = Query().addCriteria(where(queryKey).`is`(queryValue)).queryObject
+        doReturn(collectionStub).`when`(templateStub).getCollection("worklog")
+        doReturn(iterableStub).`when`(collectionStub).distinct(
+            same("intervalId"),
+            eq(queryObject),
+            any<Class<String>>()
+        )
+        doReturn(listOf(INTERVAL_ID)).`when`(iterableStub).into(mutableListOf())
+    }
+
     private fun createWorklogClone(collaborator: Collaborator = COLLABORATOR) =
         WorklogClone(PROJECT, collaborator, TIMESTAMP, WORK_STATUS, INTERVAL_ID, WORKLOG_ID)
 
     private fun createOtherCollaborator() = Collaborator().apply { this.id = "someOtherCollaboratorId" }
-
-    private fun createWorklogInterval() = WorklogInterval().apply { this.intervalId = INTERVAL_ID }
-
-    private fun stubWorklogIntervalForAggregation() {
-        val aggregationResults = AggregationResults(listOf(createWorklogInterval()), Document())
-        doReturn(aggregationResults).`when`(templateStub)
-            .aggregate(any(), eq(Worklog::class.java), eq(WorklogInterval::class.java))
-    }
-
-    private fun createAggregation(key: String, id: String) =
-        newAggregation(
-            match(
-                where(key).`is`(id)
-                    .andOperator(where("workStatus").`is`("START"))
-            )
-        ).toString()
-
-    private fun getCapturedAggregation(): String {
-        var capturedValue = ""
-        argumentCaptor<Aggregation>().apply {
-            verify(templateStub).aggregate(capture(), eq(Worklog::class.java), eq(WorklogInterval::class.java))
-            capturedValue = firstValue.toString()
-        }
-        return capturedValue
-    }
 
     companion object {
         private val COLLABORATOR_ID = "5a3020603004e0472284a428"
