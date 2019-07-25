@@ -2,6 +2,7 @@ package lt.boldadmin.nexus.plugin.mongodb.repository.adapter
 
 import lt.boldadmin.nexus.api.repository.WorklogRepository
 import lt.boldadmin.nexus.api.type.entity.Worklog
+import lt.boldadmin.nexus.api.type.valueobject.DateRange
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.springframework.data.domain.Sort
@@ -14,6 +15,13 @@ class WorklogRepositoryAdapter(
     private val userRepositoryAdapter: UserRepositoryAdapter,
     private val worklogMongoRepository: WorklogMongoRepository
 ): WorklogRepository {
+    override fun findIntervalIdsByCollaboratorId(collaboratorId: String, dateRange: DateRange): Collection<String> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun findIntervalIdsByProjectId(projectId: String, dateRange: DateRange): Collection<String> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun save(worklog: Worklog) {
         val worklogClone = WorklogClone().apply { set(worklog) }
