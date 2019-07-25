@@ -6,6 +6,7 @@ import com.nhaarman.mockito_kotlin.*
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.Worklog
+import lt.boldadmin.nexus.api.type.valueobject.DateRange
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
@@ -22,6 +23,7 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query
+import java.time.LocalDate
 import kotlin.test.*
 
 @RunWith(MockitoJUnitRunner::class)
@@ -75,7 +77,7 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets latest worklog by project id, collaborator id and not by work status`() {
+    fun `Gets latest worklog by project id, collaborator id`() {
         val expectedWorklog = createWorklog()
         val query = Query().apply {
             addCriteria(Criteria.where("project.\$id").`is`(PROJECT_ID))
@@ -102,7 +104,8 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Gets interval ids by collaborator id`() {
-        stubMongoTemplateForWorklogIntervalIds("collaborator.\$id", COLLABORATOR_ID)
+        val query = Query().addCriteria(where("collaborator.\$id").`is`(COLLABORATOR_ID))
+        stubQueryForWorklogIntervalIds(query)
 
         val actualIntervalIds = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
 
@@ -111,9 +114,36 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Gets interval ids by project id`() {
-        stubMongoTemplateForWorklogIntervalIds("project.\$id", PROJECT_ID)
+        val query = Query().addCriteria(where("project.\$id").`is`(PROJECT_ID))
+        stubQueryForWorklogIntervalIds(query)
 
         val actualIntervalIds = adapter.findIntervalIdsByProjectId(PROJECT_ID)
+
+        assertEquals(listOf(INTERVAL_ID), actualIntervalIds)
+    }
+
+    @Test
+    fun `Gets interval ids by project id and date range`() {
+        val query = Query().addCriteria(where("project.\$id").`is`(PROJECT_ID))
+            .addCriteria(where("timestamp").gte(1558742400000).lte(1558915199999))
+            .addCriteria(where("workStatus").`is`("START"))
+        stubQueryForWorklogIntervalIds(query)
+
+        val dateRange = DateRange(LocalDate.of(2019, 5, 25), LocalDate.of(2019, 5, 26))
+        val actualIntervalIds = adapter.findIntervalIdsByProjectId(PROJECT_ID, dateRange)
+
+        assertEquals(listOf(INTERVAL_ID), actualIntervalIds)
+    }
+
+    @Test
+    fun `Gets interval ids by collaborator id and date range`() {
+        val query = Query().addCriteria(where("collaborator.\$id").`is`(COLLABORATOR_ID))
+            .addCriteria(where("timestamp").gte(1558742400000).lte(1558915199999))
+            .addCriteria(where("workStatus").`is`("START"))
+        stubQueryForWorklogIntervalIds(query)
+
+        val dateRange = DateRange(LocalDate.of(2019, 5, 25), LocalDate.of(2019, 5, 26))
+        val actualIntervalIds = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID, dateRange)
 
         assertEquals(listOf(INTERVAL_ID), actualIntervalIds)
     }
@@ -225,16 +255,13 @@ class WorklogRepositoryAdapterTest {
 
     private fun createWorklog() = Worklog(PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, WORKLOG_ID)
 
-    private fun stubMongoTemplateForWorklogIntervalIds(queryKey: String, queryValue: String) {
+    private fun stubQueryForWorklogIntervalIds(query: Query) {
         val collectionStub = mock<MongoCollection<Document>>()
         val iterableStub = mock<DistinctIterable<Collection<String>>>()
-        val queryObject = Query().addCriteria(where(queryKey).`is`(queryValue)).queryObject
         doReturn(collectionStub).`when`(templateStub).getCollection("worklog")
-        doReturn(iterableStub).`when`(collectionStub).distinct(
-            same("intervalId"),
-            eq(queryObject),
-            any<Class<String>>()
-        )
+        doReturn(iterableStub)
+            .`when`(collectionStub)
+            .distinct(same("intervalId"), eq(query.queryObject), any<Class<String>>())
         doReturn(listOf(INTERVAL_ID)).`when`(iterableStub).into(mutableListOf())
     }
 
