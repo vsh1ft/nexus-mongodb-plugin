@@ -5,8 +5,8 @@ import com.nhaarman.mockitokotlin2.mock
 import lt.boldadmin.nexus.api.type.valueobject.Country
 import lt.boldadmin.nexus.plugin.mongodb.repository.CountryMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.CountryRepositoryAdapter
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class CountryRepositoryAdapterTest {
 

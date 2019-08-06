@@ -11,11 +11,12 @@ import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.WorklogRepositoryAda
 import lt.boldadmin.nexus.plugin.mongodb.type.aggregation.WorklogInterval
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.bson.Document
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.aggregation.Aggregation
@@ -25,9 +26,8 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query
-import kotlin.test.*
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class WorklogRepositoryAdapterTest {
 
     @Mock
@@ -41,7 +41,7 @@ class WorklogRepositoryAdapterTest {
 
     private lateinit var adapter: WorklogRepositoryAdapter
 
-    @Before
+    @BeforeEach
     fun setUp() {
         adapter = WorklogRepositoryAdapter(templateStub, userRepositoryAdapterSpy, worklogMongoRepositorySpy)
     }

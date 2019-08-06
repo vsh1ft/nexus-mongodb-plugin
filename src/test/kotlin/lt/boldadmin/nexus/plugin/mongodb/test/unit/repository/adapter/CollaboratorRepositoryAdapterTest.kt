@@ -7,16 +7,16 @@ import lt.boldadmin.nexus.api.type.valueobject.Address
 import lt.boldadmin.nexus.api.type.valueobject.TimeRange
 import lt.boldadmin.nexus.plugin.mongodb.repository.CollaboratorMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.CollaboratorRepositoryAdapter
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertSame
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 import java.util.*
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class CollaboratorRepositoryAdapterTest {
 
     @Mock
@@ -24,7 +24,7 @@ class CollaboratorRepositoryAdapterTest {
 
     private lateinit var adapter: CollaboratorRepositoryAdapter
 
-    @Before
+    @BeforeEach
     fun setUp() {
         adapter = CollaboratorRepositoryAdapter(collaboratorMongoRepositorySpy)
     }
