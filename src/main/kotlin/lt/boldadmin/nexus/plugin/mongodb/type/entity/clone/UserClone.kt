@@ -16,10 +16,10 @@ class UserClone(
 
     internal var companyName: String = "",
 
-    @DBRef(lazy = true)
+    @DBRef
     internal var collaborators: MutableCollection<Collaborator> = HashSet(),
 
-    @DBRef(lazy = true)
+    @DBRef
     internal var projects: MutableCollection<Project> = HashSet()
 
 ): Person() {
