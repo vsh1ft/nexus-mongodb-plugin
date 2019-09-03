@@ -128,8 +128,8 @@ class WorklogRepositoryAdapterTest {
             .addCriteria(where("timestamp").gte(1558742400000).lte(1558915199999))
             .addCriteria(where("workStatus").`is`("START"))
         stubQueryForWorklogIntervalIds(query)
-
         val dateRange = DateRange(LocalDate.of(2019, 5, 25), LocalDate.of(2019, 5, 26))
+
         val actualIntervalIds = adapter.findIntervalIdsByProjectId(PROJECT_ID, dateRange)
 
         assertEquals(listOf(INTERVAL_ID), actualIntervalIds)
@@ -141,8 +141,8 @@ class WorklogRepositoryAdapterTest {
             .addCriteria(where("timestamp").gte(1558742400000).lte(1558915199999))
             .addCriteria(where("workStatus").`is`("START"))
         stubQueryForWorklogIntervalIds(query)
-
         val dateRange = DateRange(LocalDate.of(2019, 5, 25), LocalDate.of(2019, 5, 26))
+
         val actualIntervalIds = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID, dateRange)
 
         assertEquals(listOf(INTERVAL_ID), actualIntervalIds)
@@ -256,8 +256,8 @@ class WorklogRepositoryAdapterTest {
     private fun createWorklog() = Worklog(PROJECT, COLLABORATOR, TIMESTAMP, WORK_STATUS, INTERVAL_ID, WORKLOG_ID)
 
     private fun stubQueryForWorklogIntervalIds(query: Query) {
-        val collectionStub = mock<MongoCollection<Document>>()
-        val iterableStub = mock<DistinctIterable<Collection<String>>>()
+        val collectionStub: MongoCollection<Document> = mock()
+        val iterableStub: DistinctIterable<Collection<String>> = mock()
         doReturn(collectionStub).`when`(templateStub).getCollection("worklog")
         doReturn(iterableStub)
             .`when`(collectionStub)

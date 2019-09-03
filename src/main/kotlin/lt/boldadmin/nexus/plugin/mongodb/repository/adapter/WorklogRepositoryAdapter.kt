@@ -70,17 +70,14 @@ class WorklogRepositoryAdapter(
     private fun findByIntervalId(intervalId: String): Collection<Worklog> =
         worklogMongoRepository.findByIntervalId(intervalId).map { it.get() }
 
-    private fun findDistinctWorklogIntervalIds(query: Query): Collection<String> {
-        return template
+    private fun findDistinctWorklogIntervalIds(query: Query): Collection<String> =
+        template
             .getCollection("worklog")
             .distinct("intervalId", query.queryObject, String::class.java)
             .into(mutableListOf())
-    }
 
-    private fun createQuery(keyValues: Map<String, String>): Query {
-        val query = Query()
-        keyValues.forEach { query.addCriteria(where(it.key).`is`(it.value)) }
-        return query
+    private fun createQuery(keyValues: Map<String, String>): Query =
+        Query().apply { keyValues.forEach { this.addCriteria(where(it.key).`is`(it.value)) }
     }
 
     private fun LocalDate.toEpochMilli(time: LocalTime) = this.atTime(time).toInstant(ZoneOffset.UTC).toEpochMilli()
