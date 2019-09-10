@@ -2,15 +2,16 @@ package lt.boldadmin.nexus.plugin.mongodb.repository.adapter
 
 import lt.boldadmin.nexus.api.repository.WorklogRepository
 import lt.boldadmin.nexus.api.type.entity.Worklog
+import lt.boldadmin.nexus.api.type.valueobject.DateRange
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
-import lt.boldadmin.nexus.plugin.mongodb.type.aggregation.WorklogInterval
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.aggregation.Aggregation.match
-import org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneOffset
 
 class WorklogRepositoryAdapter(
     private val template: MongoTemplate,
@@ -18,32 +19,39 @@ class WorklogRepositoryAdapter(
     private val worklogMongoRepository: WorklogMongoRepository
 ): WorklogRepository {
 
+    override fun findIntervalIdsByCollaboratorId(collaboratorId: String, dateRange: DateRange): Collection<String> {
+        val query = createQuery(mapOf("collaborator.\$id" to collaboratorId, "workStatus" to "START"))
+            .addCriteria(where("timestamp").gte(dateRange.startToEpochMilli()).lte(dateRange.endToEpochMilli()))
+
+        return findDistinctWorklogIntervalIds(query)
+    }
+
+    override fun findIntervalIdsByProjectId(projectId: String, dateRange: DateRange): Collection<String> {
+        val query = createQuery(mapOf("project.\$id" to projectId, "workStatus" to "START"))
+            .addCriteria(where("timestamp").gte(dateRange.startToEpochMilli()).lte(dateRange.endToEpochMilli()))
+
+        return findDistinctWorklogIntervalIds(query)
+    }
+
     override fun save(worklog: Worklog) {
         val worklogClone = WorklogClone().apply { set(worklog) }
         worklogMongoRepository.save(worklogClone)
     }
 
-    override fun findByProjectId(projectId: String): Collection<Worklog> =
-        worklogMongoRepository.findByProjectId(projectId).map { it.get() }
-
-    override fun findByCollaboratorId(collaboratorId: String): Collection<Worklog> =
-        worklogMongoRepository.findByCollaboratorId(collaboratorId).map { (it).get() }
-
     override fun findIntervalIdsByCollaboratorId(collaboratorId: String) =
-        findWorklogIntervalIds("collaborator.\$id", collaboratorId)
+        findDistinctWorklogIntervalIds(createQuery(mapOf("collaborator.\$id" to collaboratorId)))
 
-    override fun findIntervalIdsByProjectId(projectId: String) = findWorklogIntervalIds("project.\$id", projectId)
+    override fun findIntervalIdsByProjectId(projectId: String) =
+        findDistinctWorklogIntervalIds(createQuery(mapOf("project.\$id" to projectId)))
 
     override fun findByIntervalIdOrderByLatest(intervalId: String) =
         worklogMongoRepository.findByIntervalIdOrderByTimestampAsc(intervalId).map { it.get() }
 
     override fun findLatest(collaboratorId: String, projectId: String): Worklog? {
-        val query = Query().apply {
-            addCriteria(where("project.\$id").`is`(projectId))
-            addCriteria(where("collaborator.\$id").`is`(collaboratorId))
-            with(Sort(Sort.Direction.DESC, "timestamp"))
-            limit(1)
-        }
+        val query = createQuery(mapOf("project.\$id" to projectId, "collaborator.\$id" to collaboratorId))
+            .with(Sort(Sort.Direction.DESC, "timestamp"))
+            .limit(1)
+
         return template.findOne(query, Worklog::class.java)
     }
 
@@ -62,16 +70,19 @@ class WorklogRepositoryAdapter(
     private fun findByIntervalId(intervalId: String): Collection<Worklog> =
         worklogMongoRepository.findByIntervalId(intervalId).map { it.get() }
 
-    private fun findWorklogIntervalIds(key: String, id: String): Collection<String> {
-        return template.aggregate(
-            createAggregation(key, id),
-            Worklog::class.java,
-            WorklogInterval::class.java
-        ).mappedResults.map { it.intervalId }.toList()
+    private fun findDistinctWorklogIntervalIds(query: Query): Collection<String> =
+        template
+            .getCollection("worklog")
+            .distinct("intervalId", query.queryObject, String::class.java)
+            .into(mutableListOf())
+
+    private fun createQuery(keyValues: Map<String, String>): Query =
+        Query().apply { keyValues.forEach { this.addCriteria(where(it.key).`is`(it.value)) }
     }
 
-    private fun createAggregation(key: String, id: String) =
-        newAggregation(
-            match(where(key).`is`(id).andOperator(where("workStatus").`is`("START")))
-        )
+    private fun LocalDate.toEpochMilli(time: LocalTime) = this.atTime(time).toInstant(ZoneOffset.UTC).toEpochMilli()
+
+    private fun DateRange.startToEpochMilli() = start.toEpochMilli(LocalTime.MIN)
+
+    private fun DateRange.endToEpochMilli() = end.toEpochMilli(LocalTime.MAX)
 }

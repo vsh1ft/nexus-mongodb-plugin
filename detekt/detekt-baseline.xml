@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <Whitelist>
+    <ID>TooManyFunctions:UserRepositoryAdapter.kt$UserRepositoryAdapter : UserRepository</ID>
+    <ID>TooManyFunctions:UserRepositoryAdapterTest.kt$UserRepositoryAdapterTest</ID>
+    <ID>TooManyFunctions:WorklogRepositoryAdapter.kt$WorklogRepositoryAdapter : WorklogRepository</ID>
+    <ID>TooManyFunctions:WorklogRepositoryAdapterTest.kt$WorklogRepositoryAdapterTest</ID>
+  </Whitelist>
+</SmellBaseline>
