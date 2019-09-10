@@ -1,36 +1,28 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockitokotlin2.*
 import lt.boldadmin.nexus.api.type.entity.*
 import lt.boldadmin.nexus.api.type.valueobject.*
 import lt.boldadmin.nexus.plugin.mongodb.repository.UserMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.UserClone
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.junit.rules.ExpectedException
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 import java.util.*
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class UserRepositoryAdapterTest {
-
-    @Rule
-    @JvmField
-    val expectedException = ExpectedException.none()!!
 
     @Mock
     private lateinit var userMongoRepositorySpy: UserMongoRepository
 
     private lateinit var adapter: UserRepositoryAdapter
 
-    @Before
+    @BeforeEach
     fun setUp() {
         adapter = UserRepositoryAdapter(userMongoRepositorySpy)
     }
@@ -164,10 +156,11 @@ class UserRepositoryAdapterTest {
 
     @Test
     fun `Doesn't find by Project id`() {
-        expectedException.expect(NoSuchElementException::class.java)
         doReturn(listOf(TypeFactory().createUserClone())).`when`(userMongoRepositorySpy).findAll()
 
-        adapter.findByProjectId("otherId")
+        assertThrows(NoSuchElementException::class.java) {
+            adapter.findByProjectId("otherId")
+        }
     }
 
     @Test
@@ -235,10 +228,11 @@ class UserRepositoryAdapterTest {
 
     @Test
     fun `Doesn't find by collaborator id`() {
-        expectedException.expect(NoSuchElementException::class.java)
         doReturn(listOf(TypeFactory().createUserClone())).`when`(userMongoRepositorySpy).findAll()
 
-        adapter.findByCollaboratorId("otherId")
+        assertThrows(NoSuchElementException::class.java) {
+            adapter.findByCollaboratorId("otherId")
+        }
     }
 
     @Test

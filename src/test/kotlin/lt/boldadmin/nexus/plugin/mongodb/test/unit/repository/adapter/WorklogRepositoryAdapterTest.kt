@@ -2,7 +2,7 @@ package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 
 import com.mongodb.client.DistinctIterable
 import com.mongodb.client.MongoCollection
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockitokotlin2.*
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.Worklog
@@ -13,20 +13,20 @@ import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapte
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.WorklogRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.bson.Document
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query
 import java.time.LocalDate
-import kotlin.test.*
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class WorklogRepositoryAdapterTest {
 
     @Mock
@@ -40,7 +40,7 @@ class WorklogRepositoryAdapterTest {
 
     private lateinit var adapter: WorklogRepositoryAdapter
 
-    @Before
+    @BeforeEach
     fun setUp() {
         adapter = WorklogRepositoryAdapter(templateStub, userRepositoryAdapterSpy, worklogMongoRepositorySpy)
     }

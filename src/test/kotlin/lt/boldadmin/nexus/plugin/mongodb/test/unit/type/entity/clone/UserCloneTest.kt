@@ -5,8 +5,8 @@ import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.User
 import lt.boldadmin.nexus.api.type.valueobject.Address
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.UserClone
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class UserCloneTest {
 

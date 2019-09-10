@@ -10,10 +10,10 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document(collection = "worklog")
 class WorklogClone(
 
-    @DBRef(lazy = true)
+    @DBRef
     internal var project: Project = Project(),
 
-    @DBRef(lazy = true)
+    @DBRef
     internal var collaborator: Collaborator = Collaborator(),
 
     internal var timestamp: Long = 0,
