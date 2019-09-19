@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
+import org.springframework.data.mongodb.core.remove
 
 @ExtendWith(MockKExtension::class)
 class CollaboratorCoordinatesRepositoryAdapterTest {
@@ -46,10 +47,10 @@ class CollaboratorCoordinatesRepositoryAdapterTest {
     @Test
     fun `Removes older collaborator coordinates`() {
         val query = query(where("timestamp").lte(123.toLong()).and("collaboratorId").`is`("a"))
-        every { mongoTemplateSpy.remove(query) } returns mockk()
+        every { mongoTemplateSpy.remove(query, CollaboratorCoordinates::class) } returns mockk()
 
         adapter.removeOlderThan("a", 123)
 
-        verify { mongoTemplateSpy.remove(query) }
+        verify { mongoTemplateSpy.remove(query, CollaboratorCoordinates::class) }
     }
 }

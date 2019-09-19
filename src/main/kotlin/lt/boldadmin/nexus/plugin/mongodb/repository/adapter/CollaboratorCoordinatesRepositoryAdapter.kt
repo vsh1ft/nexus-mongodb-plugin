@@ -6,6 +6,7 @@ import lt.boldadmin.nexus.plugin.mongodb.repository.CollaboratorCoordinatesMongo
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
+import org.springframework.data.mongodb.core.remove
 
 class CollaboratorCoordinatesRepositoryAdapter(
     private val mongoRepository: CollaboratorCoordinatesMongoRepository,
@@ -18,6 +19,6 @@ class CollaboratorCoordinatesRepositoryAdapter(
 
     override fun removeOlderThan(collaboratorId: String, timestamp: Long) {
         val criteria = where("timestamp").lte(timestamp).and("collaboratorId").`is`(collaboratorId)
-        mongoTemplate.remove(query(criteria))
+        mongoTemplate.remove(query(criteria), CollaboratorCoordinates::class)
     }
 }
