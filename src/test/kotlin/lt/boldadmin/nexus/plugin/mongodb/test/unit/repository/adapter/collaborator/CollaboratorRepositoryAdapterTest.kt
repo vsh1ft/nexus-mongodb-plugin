@@ -1,12 +1,12 @@
-package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
+package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter.collaborator
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.verify
-import lt.boldadmin.nexus.api.type.entity.Collaborator
+import lt.boldadmin.nexus.api.type.entity.collaborator.Collaborator
 import lt.boldadmin.nexus.api.type.valueobject.Address
 import lt.boldadmin.nexus.api.type.valueobject.TimeRange
-import lt.boldadmin.nexus.plugin.mongodb.repository.CollaboratorMongoRepository
-import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.CollaboratorRepositoryAdapter
+import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.collaborator.CollaboratorRepositoryAdapter
+import lt.boldadmin.nexus.plugin.mongodb.repository.collaborator.CollaboratorMongoRepository
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -26,7 +26,9 @@ class CollaboratorRepositoryAdapterTest {
 
     @BeforeEach
     fun setUp() {
-        adapter = CollaboratorRepositoryAdapter(collaboratorMongoRepositorySpy)
+        adapter = CollaboratorRepositoryAdapter(
+            collaboratorMongoRepositorySpy
+        )
     }
 
     @Test

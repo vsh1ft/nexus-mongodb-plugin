@@ -1,8 +1,8 @@
-package lt.boldadmin.nexus.plugin.mongodb.repository.adapter
+package lt.boldadmin.nexus.plugin.mongodb.repository.adapter.collaborator
 
 import lt.boldadmin.nexus.api.repository.CollaboratorCoordinatesRepository
-import lt.boldadmin.nexus.api.type.entity.CollaboratorCoordinates
-import lt.boldadmin.nexus.plugin.mongodb.repository.CollaboratorCoordinatesMongoRepository
+import lt.boldadmin.nexus.api.type.entity.collaborator.CollaboratorCoordinates
+import lt.boldadmin.nexus.plugin.mongodb.repository.collaborator.CollaboratorCoordinatesMongoRepository
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
@@ -12,6 +12,8 @@ class CollaboratorCoordinatesRepositoryAdapter(
     private val mongoRepository: CollaboratorCoordinatesMongoRepository,
     private val mongoTemplate: MongoTemplate
 ): CollaboratorCoordinatesRepository {
+    override fun findByCollaboratorId(collaboratorId: String): Collection<CollaboratorCoordinates> =
+        mongoRepository.findByCollaboratorIdOrderByTimestampDesc(collaboratorId)
 
     override fun save(collaboratorCoordinates: CollaboratorCoordinates) {
         mongoRepository.save(collaboratorCoordinates)
