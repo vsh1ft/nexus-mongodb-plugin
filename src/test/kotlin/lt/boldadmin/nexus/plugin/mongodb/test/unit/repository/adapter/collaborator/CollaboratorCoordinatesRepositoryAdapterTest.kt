@@ -1,11 +1,8 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter.collaborator
 
-import io.mockk.every
+import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import io.mockk.verify
-import lt.boldadmin.nexus.api.repository.CollaboratorCoordinatesRepository
 import lt.boldadmin.nexus.api.type.valueobject.CollaboratorCoordinates
 import lt.boldadmin.nexus.api.type.valueobject.Coordinates
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.collaborator.CollaboratorCoordinatesRepositoryAdapter
@@ -28,24 +25,17 @@ class CollaboratorCoordinatesRepositoryAdapterTest {
     @MockK
     private lateinit var mongoTemplateSpy: MongoTemplate
 
-    private lateinit var adapter: CollaboratorCoordinatesRepository
+    private lateinit var adapter: CollaboratorCoordinatesRepositoryAdapter
 
     @BeforeEach
-    fun setUp() {
-        adapter = CollaboratorCoordinatesRepositoryAdapter(
-            mongoRepositorySpy,
-            mongoTemplateSpy
-        )
+    fun `Set up`() {
+        adapter = CollaboratorCoordinatesRepositoryAdapter(mongoRepositorySpy, mongoTemplateSpy)
     }
 
     @Test
     fun `Saves collaborator coordinates`() {
-        val collaboratorCoordinates = CollaboratorCoordinates(
-            "collabId",
-            Coordinates(1.0, 2.0),
-            123
-        )
-        every { mongoRepositorySpy.save(collaboratorCoordinates) } returns Unit
+        val collaboratorCoordinates = CollaboratorCoordinates("collabId", Coordinates(1.0, 2.0), 123)
+        every { mongoRepositorySpy.save(collaboratorCoordinates) } just Runs
 
         adapter.save(collaboratorCoordinates)
 
@@ -53,8 +43,8 @@ class CollaboratorCoordinatesRepositoryAdapterTest {
     }
 
     @Test
-    fun `Removes older collaborator coordinates`() {
-        val query = query(where("timestamp").lte(123.toLong()).and("collaboratorId").`is`("a"))
+    fun `Removes expired coordinates`() {
+        val query = query(where("timestamp").lte(123L).and("collaboratorId").`is`("a"))
         every { mongoTemplateSpy.remove(query, CollaboratorCoordinates::class) } returns mockk()
 
         adapter.removeOlderThan(123, "a")
@@ -64,13 +54,7 @@ class CollaboratorCoordinatesRepositoryAdapterTest {
 
     @Test
     fun `Finds coordinates by collaborator id`() {
-        val actualCoordinates = listOf(
-            CollaboratorCoordinates(
-                "collabId",
-                Coordinates(1.2, 3.4),
-                123
-            )
-        )
+        val actualCoordinates = listOf(CollaboratorCoordinates("collabId", Coordinates(1.2, 3.4), 123))
         every { mongoRepositorySpy.findByCollaboratorIdOrderByTimestampDesc("collabId") } returns actualCoordinates
 
         val expectedCoordinates = adapter.findByCollaboratorId("collabId")

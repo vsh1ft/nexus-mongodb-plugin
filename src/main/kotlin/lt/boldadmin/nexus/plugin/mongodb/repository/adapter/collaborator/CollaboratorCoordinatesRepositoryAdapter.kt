@@ -12,6 +12,7 @@ class CollaboratorCoordinatesRepositoryAdapter(
     private val mongoRepository: CollaboratorCoordinatesMongoRepository,
     private val mongoTemplate: MongoTemplate
 ): CollaboratorCoordinatesRepository {
+
     override fun findByCollaboratorId(collaboratorId: String): Collection<CollaboratorCoordinates> =
         mongoRepository.findByCollaboratorIdOrderByTimestampDesc(collaboratorId)
 

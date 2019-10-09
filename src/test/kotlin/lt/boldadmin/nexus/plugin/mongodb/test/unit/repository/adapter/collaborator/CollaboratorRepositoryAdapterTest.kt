@@ -26,9 +26,7 @@ class CollaboratorRepositoryAdapterTest {
 
     @BeforeEach
     fun setUp() {
-        adapter = CollaboratorRepositoryAdapter(
-            collaboratorMongoRepositorySpy
-        )
+        adapter = CollaboratorRepositoryAdapter(collaboratorMongoRepositorySpy)
     }
 
     @Test
