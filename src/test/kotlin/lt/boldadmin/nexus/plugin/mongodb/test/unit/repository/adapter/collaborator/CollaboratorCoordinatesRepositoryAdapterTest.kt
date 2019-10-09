@@ -6,7 +6,7 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.verify
 import lt.boldadmin.nexus.api.repository.CollaboratorCoordinatesRepository
-import lt.boldadmin.nexus.api.type.entity.collaborator.CollaboratorCoordinates
+import lt.boldadmin.nexus.api.type.valueobject.CollaboratorCoordinates
 import lt.boldadmin.nexus.api.type.valueobject.Coordinates
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.collaborator.CollaboratorCoordinatesRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.collaborator.CollaboratorCoordinatesMongoRepository
@@ -57,14 +57,20 @@ class CollaboratorCoordinatesRepositoryAdapterTest {
         val query = query(where("timestamp").lte(123.toLong()).and("collaboratorId").`is`("a"))
         every { mongoTemplateSpy.remove(query, CollaboratorCoordinates::class) } returns mockk()
 
-        adapter.removeOlderThan("a", 123)
+        adapter.removeOlderThan(123, "a")
 
         verify { mongoTemplateSpy.remove(query, CollaboratorCoordinates::class) }
     }
 
     @Test
     fun `Finds coordinates by collaborator id`() {
-        val actualCoordinates = listOf(CollaboratorCoordinates("collabId", Coordinates(1.2, 3.4), 123))
+        val actualCoordinates = listOf(
+            CollaboratorCoordinates(
+                "collabId",
+                Coordinates(1.2, 3.4),
+                123
+            )
+        )
         every { mongoRepositorySpy.findByCollaboratorIdOrderByTimestampDesc("collabId") } returns actualCoordinates
 
         val expectedCoordinates = adapter.findByCollaboratorId("collabId")

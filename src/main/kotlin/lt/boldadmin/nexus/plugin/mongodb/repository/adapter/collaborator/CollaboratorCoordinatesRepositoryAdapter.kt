@@ -1,7 +1,7 @@
 package lt.boldadmin.nexus.plugin.mongodb.repository.adapter.collaborator
 
 import lt.boldadmin.nexus.api.repository.CollaboratorCoordinatesRepository
-import lt.boldadmin.nexus.api.type.entity.collaborator.CollaboratorCoordinates
+import lt.boldadmin.nexus.api.type.valueobject.CollaboratorCoordinates
 import lt.boldadmin.nexus.plugin.mongodb.repository.collaborator.CollaboratorCoordinatesMongoRepository
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria.where
@@ -19,7 +19,7 @@ class CollaboratorCoordinatesRepositoryAdapter(
         mongoRepository.save(collaboratorCoordinates)
     }
 
-    override fun removeOlderThan(collaboratorId: String, timestamp: Long) {
+    override fun removeOlderThan(timestamp: Long, collaboratorId: String) {
         val criteria = where("timestamp").lte(timestamp).and("collaboratorId").`is`(collaboratorId)
         mongoTemplate.remove(query(criteria), CollaboratorCoordinates::class)
     }
