@@ -65,7 +65,7 @@ class ProjectRepositoryAdapterTest {
         private fun createProject() = Project().apply {
             id = PROJECT_ID
             name = PROJECT_NAME
-            locations.add(Location(Coordinates(1.1, 1.1)))
+            location = Location(Coordinates(1.1, 1.1))
         }
     }
 
