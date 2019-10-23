@@ -1,7 +1,10 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 
 import com.nhaarman.mockitokotlin2.*
-import lt.boldadmin.nexus.api.type.entity.*
+import lt.boldadmin.nexus.api.type.entity.Project
+import lt.boldadmin.nexus.api.type.entity.User
+import lt.boldadmin.nexus.api.type.entity.Worklog
+import lt.boldadmin.nexus.api.type.entity.collaborator.Collaborator
 import lt.boldadmin.nexus.api.type.valueobject.*
 import lt.boldadmin.nexus.plugin.mongodb.repository.UserMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
@@ -337,10 +340,7 @@ class UserRepositoryAdapterTest {
             collaborators = mutableListOf(createCollaborator())
         }
 
-        private fun createProject() = Project(
-            PROJECT_ID, PROJECT_NAME,
-            mutableSetOf(PROJECT_LOCATION)
-        )
+        private fun createProject() = Project(PROJECT_ID, PROJECT_NAME, PROJECT_LOCATION)
 
         private fun createCollaborator() = Collaborator().apply { id = COLLABORATOR_ID }
 

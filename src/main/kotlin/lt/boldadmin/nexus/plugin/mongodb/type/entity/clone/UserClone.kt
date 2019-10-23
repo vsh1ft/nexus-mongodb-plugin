@@ -1,6 +1,9 @@
 package lt.boldadmin.nexus.plugin.mongodb.type.entity.clone
 
-import lt.boldadmin.nexus.api.type.entity.*
+import lt.boldadmin.nexus.api.type.entity.Person
+import lt.boldadmin.nexus.api.type.entity.Project
+import lt.boldadmin.nexus.api.type.entity.User
+import lt.boldadmin.nexus.api.type.entity.collaborator.Collaborator
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*

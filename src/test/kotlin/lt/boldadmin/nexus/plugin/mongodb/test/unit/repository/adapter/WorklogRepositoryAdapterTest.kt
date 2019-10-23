@@ -3,9 +3,9 @@ package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 import com.mongodb.client.DistinctIterable
 import com.mongodb.client.MongoCollection
 import com.nhaarman.mockitokotlin2.*
-import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.Worklog
+import lt.boldadmin.nexus.api.type.entity.collaborator.Collaborator
 import lt.boldadmin.nexus.api.type.valueobject.DateRange
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
