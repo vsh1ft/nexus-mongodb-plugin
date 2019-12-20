@@ -1,6 +1,7 @@
 package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 
 import com.nhaarman.mockitokotlin2.*
+import lt.boldadmin.nexus.api.exception.NoResultException
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.User
 import lt.boldadmin.nexus.api.type.entity.Worklog
@@ -8,6 +9,7 @@ import lt.boldadmin.nexus.api.type.entity.collaborator.Collaborator
 import lt.boldadmin.nexus.api.type.valueobject.*
 import lt.boldadmin.nexus.plugin.mongodb.repository.UserMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
+import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.addCriteria
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.UserClone
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -15,6 +17,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.query.Query
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
@@ -23,11 +27,14 @@ class UserRepositoryAdapterTest {
     @Mock
     private lateinit var userMongoRepositorySpy: UserMongoRepository
 
+    @Mock
+    private lateinit var mongoTemplateStub: MongoTemplate
+
     private lateinit var adapter: UserRepositoryAdapter
 
     @BeforeEach
     fun setUp() {
-        adapter = UserRepositoryAdapter(userMongoRepositorySpy)
+        adapter = UserRepositoryAdapter(userMongoRepositorySpy, mongoTemplateStub)
     }
 
     @Test
@@ -112,8 +119,11 @@ class UserRepositoryAdapterTest {
     }
 
     @Test
-    fun `User has project when ids match`() {
-        doReturn(Optional.of(TypeFactory().createUserClone())).`when`(userMongoRepositorySpy).findById(USER_ID)
+    fun `Project belongs to User`() {
+        val query = Query().addCriteria(
+            mapOf("projects.\$ref" to "project", "projects.\$id" to PROJECT_ID, "_id" to USER_ID)
+        )
+        doReturn(true).`when`(mongoTemplateStub).exists(query, User::class.java)
 
         val doesUserHaveProject = adapter.doesUserHaveProject(USER_ID, PROJECT_ID)
 
@@ -121,17 +131,11 @@ class UserRepositoryAdapterTest {
     }
 
     @Test
-    fun `User doesn't have project when ids don't match`() {
-        doReturn(Optional.of(TypeFactory().createUserClone())).`when`(userMongoRepositorySpy).findById(USER_ID)
-
-        val doesUserHaveProject = adapter.doesUserHaveProject(USER_ID, "otherId")
-
-        assertFalse(doesUserHaveProject)
-    }
-
-    @Test
-    fun `User has collaborator when ids match`() {
-        doReturn(Optional.of(TypeFactory().createUserClone())).`when`(userMongoRepositorySpy).findById(USER_ID)
+    fun `Collaborator belongs to User`() {
+        val query = Query().addCriteria(
+            mapOf("collaborators.\$ref" to "collaborator", "collaborators.\$id" to COLLABORATOR_ID, "_id" to USER_ID)
+        )
+        doReturn(true).`when`(mongoTemplateStub).exists(query, User::class.java)
 
         val doesUserHaveCollaborator = adapter.doesUserHaveCollaborator(USER_ID, COLLABORATOR_ID)
 
@@ -139,29 +143,19 @@ class UserRepositoryAdapterTest {
     }
 
     @Test
-    fun `User doesn't have collaborator when ids don't match`() {
-        doReturn(Optional.of(TypeFactory().createUserClone())).`when`(userMongoRepositorySpy).findById(USER_ID)
-
-        val doesUserHaveCollaborator = adapter.doesUserHaveCollaborator(USER_ID, "otherId")
-
-        assertFalse(doesUserHaveCollaborator)
-    }
-
-    @Test
     fun `Finds by Project id`() {
-        val expectedUser = TypeFactory().createUserClone()
-        doReturn(listOf(expectedUser)).`when`(userMongoRepositorySpy).findAll()
+        val query = Query().addCriteria(mapOf("projects.\$ref" to "project", "projects.\$id" to PROJECT_ID))
+        val expectedUser = TypeFactory().createUser()
+        doReturn(expectedUser).`when`(mongoTemplateStub).findOne(query, User::class.java)
 
         val actualUser = adapter.findByProjectId(PROJECT_ID)
 
-        assertUserFieldsAreEqual(expectedUser.get(), actualUser)
+        assertUserFieldsAreEqual(expectedUser, actualUser)
     }
 
     @Test
     fun `Doesn't find by Project id`() {
-        doReturn(listOf(TypeFactory().createUserClone())).`when`(userMongoRepositorySpy).findAll()
-
-        assertThrows(NoSuchElementException::class.java) {
+        assertThrows(NoResultException::class.java) {
             adapter.findByProjectId("otherId")
         }
     }
@@ -220,51 +214,22 @@ class UserRepositoryAdapterTest {
     }
 
     @Test
-    fun `User has worklog when collaborator or project ids match by interval id`() {
-        doReturn(Optional.of(TypeFactory().createUserClone()))
-            .`when`(userMongoRepositorySpy).findById(USER_ID)
+    fun `Worklog belongs to User`() {
+        val query = Query().addCriteria(
+            mapOf(
+                "collaborators.\$ref" to "collaborator",
+                "collaborators.\$id" to COLLABORATOR_ID,
+                "projects.\$ref" to "project",
+                "projects.\$id" to PROJECT_ID,
+                "_id" to USER_ID
+            )
+        )
 
-        val worklog = TypeFactory().createWorklog("start", WorkStatus.START)
-        val hasWorklog = adapter.doesUserHaveWorklog(USER_ID, worklog)
+        doReturn(true).`when`(mongoTemplateStub).exists(query, User::class.java)
+
+        val hasWorklog = adapter.doesUserHaveWorklog(USER_ID, TypeFactory().createWorklog())
+
         assertTrue(hasWorklog)
-    }
-
-    @Test
-    fun `User does not have worklog when project or collaborator ids don't match by interval id`() {
-        doReturn(Optional.of(TypeFactory().createUserClone()))
-            .`when`(userMongoRepositorySpy).findById(USER_ID)
-        val worklog = TypeFactory().createWorklog("start", WorkStatus.START).apply {
-            this.project.id = "otherId"
-            this.collaborator.id = "otherId"
-        }
-
-        val hasWorklog = adapter.doesUserHaveWorklog(USER_ID, worklog)
-        assertFalse(hasWorklog)
-    }
-
-    @Test
-    fun `User does not have worklog when project ids don't match by interval id`() {
-        doReturn(Optional.of(TypeFactory().createUserClone()))
-            .`when`(userMongoRepositorySpy).findById(USER_ID)
-        val worklog = TypeFactory().createWorklog("start", WorkStatus.START).apply {
-            this.project.id = "otherId"
-        }
-        val hasWorklog = adapter.doesUserHaveWorklog(USER_ID, worklog)
-
-        assertFalse(hasWorklog)
-    }
-
-    @Test
-    fun `User does not have worklog when collaborator ids don't match by interval id`() {
-        doReturn(Optional.of(TypeFactory().createUserClone()))
-            .`when`(userMongoRepositorySpy).findById(USER_ID)
-        val worklog = TypeFactory().createWorklog("start", WorkStatus.START).apply {
-            this.collaborator.id = "otherId"
-        }
-
-        val hasWorklog = adapter.doesUserHaveWorklog(USER_ID, worklog)
-
-        assertFalse(hasWorklog)
     }
 
     private fun assertUserFieldsAreEqual(expectedUser: User, actualUser: User) {
