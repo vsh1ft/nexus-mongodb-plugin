@@ -220,25 +220,6 @@ class UserRepositoryAdapterTest {
     }
 
     @Test
-    fun `Finds by collaborator id`() {
-        val expectedUser = TypeFactory().createUserClone()
-        doReturn(listOf(expectedUser)).`when`(userMongoRepositorySpy).findAll()
-
-        val actualUser = adapter.findByCollaboratorId(COLLABORATOR_ID)
-
-        assertUserFieldsAreEqual(expectedUser.get(), actualUser)
-    }
-
-    @Test
-    fun `Doesn't find by collaborator id`() {
-        doReturn(listOf(TypeFactory().createUserClone())).`when`(userMongoRepositorySpy).findAll()
-
-        assertThrows(NoSuchElementException::class.java) {
-            adapter.findByCollaboratorId("otherId")
-        }
-    }
-
-    @Test
     fun `User has worklog when collaborator or project ids match by interval id`() {
         doReturn(Optional.of(TypeFactory().createUserClone()))
             .`when`(userMongoRepositorySpy).findById(USER_ID)
