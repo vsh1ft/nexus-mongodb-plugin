@@ -23,9 +23,6 @@ class UserRepositoryAdapter(private val userMongoRepository: UserMongoRepository
 
     override fun existsByCompanyName(name: String) = userMongoRepository.existsByCompanyName(name)
 
-    override fun findByCollaboratorId(collaboratorId: String) =
-        findAll().single { user -> user.collaborators.any { it.id == collaboratorId } }
-
     override fun findByProjectId(projectId: String) =
         findAll().single { user -> user.projects.any { p -> p.id == projectId } }
 

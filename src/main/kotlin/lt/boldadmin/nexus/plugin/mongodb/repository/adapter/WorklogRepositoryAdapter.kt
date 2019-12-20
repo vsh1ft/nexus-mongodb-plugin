@@ -20,14 +20,14 @@ class WorklogRepositoryAdapter(
 ): WorklogRepository {
 
     override fun findIntervalIdsByCollaboratorId(collaboratorId: String, dateRange: DateRange): Collection<String> {
-        val query = createQuery(mapOf("collaborator.\$id" to collaboratorId, "workStatus" to "START"))
+        val query = Query().addCriteria(mapOf("collaborator.\$id" to collaboratorId, "workStatus" to "START"))
             .addCriteria(where("timestamp").gte(dateRange.startToEpochMilli()).lte(dateRange.endToEpochMilli()))
 
         return findDistinctWorklogIntervalIds(query)
     }
 
     override fun findIntervalIdsByProjectId(projectId: String, dateRange: DateRange): Collection<String> {
-        val query = createQuery(mapOf("project.\$id" to projectId, "workStatus" to "START"))
+        val query = Query().addCriteria(mapOf("project.\$id" to projectId, "workStatus" to "START"))
             .addCriteria(where("timestamp").gte(dateRange.startToEpochMilli()).lte(dateRange.endToEpochMilli()))
 
         return findDistinctWorklogIntervalIds(query)
@@ -39,16 +39,16 @@ class WorklogRepositoryAdapter(
     }
 
     override fun findIntervalIdsByCollaboratorId(collaboratorId: String) =
-        findDistinctWorklogIntervalIds(createQuery(mapOf("collaborator.\$id" to collaboratorId)))
+        findDistinctWorklogIntervalIds(Query().addCriteria(mapOf("collaborator.\$id" to collaboratorId)))
 
     override fun findIntervalIdsByProjectId(projectId: String) =
-        findDistinctWorklogIntervalIds(createQuery(mapOf("project.\$id" to projectId)))
+        findDistinctWorklogIntervalIds(Query().addCriteria(mapOf("project.\$id" to projectId)))
 
     override fun findByIntervalIdOrderByLatest(intervalId: String) =
         worklogMongoRepository.findByIntervalIdOrderByTimestampAsc(intervalId).map { it.get() }
 
     override fun findLatest(collaboratorId: String, projectId: String): Worklog? {
-        val query = createQuery(mapOf("project.\$id" to projectId, "collaborator.\$id" to collaboratorId))
+        val query = Query().addCriteria(mapOf("project.\$id" to projectId, "collaborator.\$id" to collaboratorId))
             .with(Sort(Sort.Direction.DESC, "timestamp"))
             .limit(1)
 
@@ -75,10 +75,6 @@ class WorklogRepositoryAdapter(
             .getCollection("worklog")
             .distinct("intervalId", query.queryObject, String::class.java)
             .into(mutableListOf())
-
-    private fun createQuery(keyValues: Map<String, String>): Query =
-        Query().apply { keyValues.forEach { this.addCriteria(where(it.key).`is`(it.value)) }
-    }
 
     private fun LocalDate.toEpochMilli(time: LocalTime) = this.atTime(time).toInstant(ZoneOffset.UTC).toEpochMilli()
 
