@@ -11,6 +11,7 @@ import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.WorklogRepositoryAdapter
+import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.addCriteria
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.*
@@ -21,7 +22,6 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query
 import java.time.LocalDate
@@ -79,12 +79,9 @@ class WorklogRepositoryAdapterTest {
     @Test
     fun `Gets latest worklog by project id, collaborator id`() {
         val expectedWorklog = createWorklog()
-        val query = Query().apply {
-            addCriteria(Criteria.where("project.\$id").`is`(PROJECT_ID))
-            addCriteria(Criteria.where("collaborator.\$id").`is`(COLLABORATOR_ID))
-            with(Sort(Sort.Direction.DESC, "timestamp"))
-            limit(1)
-        }
+        val query = Query().addCriteria(mapOf("project.\$id" to PROJECT_ID, "collaborator.\$id" to COLLABORATOR_ID))
+            .with(Sort(Sort.Direction.DESC, "timestamp"))
+            .limit(1)
         doReturn(expectedWorklog).`when`(templateStub).findOne(query, Worklog::class.java)
 
         val actualWorklog = adapter.findLatest(COLLABORATOR_ID, PROJECT_ID)
@@ -104,7 +101,7 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Gets interval ids by collaborator id`() {
-        val query = Query().addCriteria(where("collaborator.\$id").`is`(COLLABORATOR_ID))
+        val query = Query().addCriteria(mapOf("collaborator.\$id" to COLLABORATOR_ID))
         stubQueryForWorklogIntervalIds(query)
 
         val actualIntervalIds = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID)
@@ -114,7 +111,7 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Gets interval ids by project id`() {
-        val query = Query().addCriteria(where("project.\$id").`is`(PROJECT_ID))
+        val query = Query().addCriteria(mapOf("project.\$id" to PROJECT_ID))
         stubQueryForWorklogIntervalIds(query)
 
         val actualIntervalIds = adapter.findIntervalIdsByProjectId(PROJECT_ID)
@@ -124,10 +121,10 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Gets interval ids by project id and date range`() {
-        val query = Query().addCriteria(where("project.\$id").`is`(PROJECT_ID))
+        val query = Query().addCriteria(mapOf("project.\$id" to PROJECT_ID, "workStatus" to "START"))
             .addCriteria(where("timestamp").gte(1558742400000).lte(1558915199999))
-            .addCriteria(where("workStatus").`is`("START"))
         stubQueryForWorklogIntervalIds(query)
+
         val dateRange = DateRange(LocalDate.of(2019, 5, 25), LocalDate.of(2019, 5, 26))
 
         val actualIntervalIds = adapter.findIntervalIdsByProjectId(PROJECT_ID, dateRange)
@@ -137,9 +134,9 @@ class WorklogRepositoryAdapterTest {
 
     @Test
     fun `Gets interval ids by collaborator id and date range`() {
-        val query = Query().addCriteria(where("collaborator.\$id").`is`(COLLABORATOR_ID))
+        val query = Query().addCriteria(mapOf("collaborator.\$id" to COLLABORATOR_ID, "workStatus" to "START"))
             .addCriteria(where("timestamp").gte(1558742400000).lte(1558915199999))
-            .addCriteria(where("workStatus").`is`("START"))
+
         stubQueryForWorklogIntervalIds(query)
         val dateRange = DateRange(LocalDate.of(2019, 5, 25), LocalDate.of(2019, 5, 26))
 
