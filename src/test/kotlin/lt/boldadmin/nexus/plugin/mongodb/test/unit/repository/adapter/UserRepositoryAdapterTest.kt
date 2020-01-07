@@ -224,7 +224,6 @@ class UserRepositoryAdapterTest {
                 "_id" to USER_ID
             )
         )
-
         doReturn(true).`when`(mongoTemplateStub).exists(query, User::class.java)
 
         val hasWorklog = adapter.doesUserHaveWorklog(USER_ID, TypeFactory().createWorklog())
