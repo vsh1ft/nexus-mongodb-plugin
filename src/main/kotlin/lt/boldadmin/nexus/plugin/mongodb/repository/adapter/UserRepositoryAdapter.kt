@@ -31,7 +31,8 @@ class UserRepositoryAdapter(
 
     override fun findByProjectId(projectId: String): User {
         val query = Query().addCriteria(mapOf("projects.\$ref" to "project", "projects.\$id" to projectId))
-        return mongoTemplate.findOne(query, User::class.java) ?: throw NoResultException("User was not found by given project id: $projectId")
+        return mongoTemplate.findOne(query, User::class.java)
+            ?: throw NoResultException("User was not found by given project id: $projectId")
     }
 
     override fun findCollaboratorsByUserId(userId: String) = findById(userId).collaborators.toSet()
