@@ -80,11 +80,9 @@ class ProjectRepositoryAdapterTest {
 
     @Test
     fun `Provides empty list when cannot find Projects by Collaborator id`() {
-        val collaboratorId = "collaboratorId"
-
         doReturn(null).`when`(mongoTemplateStub).findOne(any(), eq(User::class.java))
 
-        val actualProjects = adapter.findByCollaboratorId(collaboratorId)
+        val actualProjects = adapter.findByCollaboratorId("collaboratorId")
 
         assertEquals(emptyList<Project>(), actualProjects)
     }

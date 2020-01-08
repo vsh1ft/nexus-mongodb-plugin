@@ -124,7 +124,6 @@ class WorklogRepositoryAdapterTest {
         val query = Query().addCriteria(mapOf("project.\$id" to PROJECT_ID, "workStatus" to "START"))
             .addCriteria(where("timestamp").gte(1558742400000).lte(1558915199999))
         stubQueryForWorklogIntervalIds(query)
-
         val dateRange = DateRange(LocalDate.of(2019, 5, 25), LocalDate.of(2019, 5, 26))
 
         val actualIntervalIds = adapter.findIntervalIdsByProjectId(PROJECT_ID, dateRange)
@@ -136,7 +135,6 @@ class WorklogRepositoryAdapterTest {
     fun `Gets interval ids by collaborator id and date range`() {
         val query = Query().addCriteria(mapOf("collaborator.\$id" to COLLABORATOR_ID, "workStatus" to "START"))
             .addCriteria(where("timestamp").gte(1558742400000).lte(1558915199999))
-
         stubQueryForWorklogIntervalIds(query)
         val dateRange = DateRange(LocalDate.of(2019, 5, 25), LocalDate.of(2019, 5, 26))
 
