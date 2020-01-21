@@ -107,7 +107,7 @@ class CollaboratorRepositoryAdapterTest {
             this.name = COLLABORATOR_NAME
             this.mobileNumber = COLLABORATOR_NUMBER
             this.address = Address()
-            this.workTime = arrayOf(workTime)
+            this.workTime = listOf(workTime)
         }
     }
 
