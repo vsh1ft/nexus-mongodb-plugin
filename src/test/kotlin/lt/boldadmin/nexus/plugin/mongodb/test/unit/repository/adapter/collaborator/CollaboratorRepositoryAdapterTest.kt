@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.verify
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.valueobject.Address
 import lt.boldadmin.nexus.api.type.valueobject.TimeRange
+import lt.boldadmin.nexus.api.type.valueobject.WorkDay
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.collaborator.CollaboratorRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.collaborator.CollaboratorMongoRepository
 import org.junit.jupiter.api.Assertions.assertSame
@@ -102,13 +103,14 @@ class CollaboratorRepositoryAdapterTest {
         private val COLLABORATOR_NAME = "Default Name"
         private val COLLABORATOR_NUMBER = "+34654324689"
 
-        private fun createCollaborator(workTime: TimeRange = TimeRange(0, 24)) = Collaborator().apply {
-            this.id = COLLABORATOR_ID
-            this.name = COLLABORATOR_NAME
-            this.mobileNumber = COLLABORATOR_NUMBER
-            this.address = Address()
-            this.workTime = listOf(workTime)
-        }
+        private fun createCollaborator() =
+            Collaborator().apply {
+                this.id = COLLABORATOR_ID
+                this.name = COLLABORATOR_NAME
+                this.mobileNumber = COLLABORATOR_NUMBER
+                this.address = Address()
+                this.workWeek = listOf(WorkDay(TimeRange(0, 24), true))
+            }
     }
 
 }
