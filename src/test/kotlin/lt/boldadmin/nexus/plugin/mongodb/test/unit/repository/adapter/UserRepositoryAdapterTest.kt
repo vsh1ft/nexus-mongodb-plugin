@@ -5,7 +5,7 @@ import lt.boldadmin.nexus.api.exception.NoResultException
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.User
 import lt.boldadmin.nexus.api.type.entity.Worklog
-import lt.boldadmin.nexus.api.type.entity.collaborator.Collaborator
+import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.valueobject.*
 import lt.boldadmin.nexus.plugin.mongodb.repository.UserMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
