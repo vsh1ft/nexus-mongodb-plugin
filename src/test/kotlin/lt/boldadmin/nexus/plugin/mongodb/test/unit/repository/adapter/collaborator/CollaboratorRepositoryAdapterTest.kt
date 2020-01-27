@@ -109,7 +109,7 @@ class CollaboratorRepositoryAdapterTest {
                 this.name = COLLABORATOR_NAME
                 this.mobileNumber = COLLABORATOR_NUMBER
                 this.address = Address()
-                this.workWeek = listOf(WorkDay(TimeRange(0, 24), true))
+                this.workWeek = sortedSetOf(WorkDay(TimeRange(0, 24), true))
             }
     }
 
