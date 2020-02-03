@@ -4,8 +4,8 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.verify
 import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.api.type.valueobject.Address
-import lt.boldadmin.nexus.api.type.valueobject.DayTime
-import lt.boldadmin.nexus.api.type.valueobject.TimeRange
+import lt.boldadmin.nexus.api.type.valueobject.Day
+import lt.boldadmin.nexus.api.type.valueobject.MinuteRange
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.collaborator.CollaboratorRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.collaborator.CollaboratorMongoRepository
 import org.junit.jupiter.api.Assertions.assertSame
@@ -109,7 +109,7 @@ class CollaboratorRepositoryAdapterTest {
                 this.name = COLLABORATOR_NAME
                 this.mobileNumber = COLLABORATOR_NUMBER
                 this.address = Address()
-                this.workWeek = sortedSetOf(DayTime(TimeRange(0, 24), true))
+                this.workWeek = sortedSetOf(Day(MinuteRange(0, 24), true))
             }
     }
 
