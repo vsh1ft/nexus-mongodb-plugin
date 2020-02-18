@@ -2,7 +2,7 @@ package lt.boldadmin.nexus.plugin.mongodb.repository.adapter
 
 import lt.boldadmin.nexus.api.repository.WorklogRepository
 import lt.boldadmin.nexus.api.type.entity.Worklog
-import lt.boldadmin.nexus.api.type.valueobject.DateRange
+import lt.boldadmin.nexus.api.type.valueobject.time.DateRange
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.springframework.data.domain.Sort

@@ -3,8 +3,8 @@ package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter
 import com.nhaarman.mockitokotlin2.*
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.User
-import lt.boldadmin.nexus.api.type.valueobject.Coordinates
-import lt.boldadmin.nexus.api.type.valueobject.Location
+import lt.boldadmin.nexus.api.type.valueobject.location.Coordinates
+import lt.boldadmin.nexus.api.type.valueobject.location.Location
 import lt.boldadmin.nexus.plugin.mongodb.repository.ProjectMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.ProjectRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.addCriteria
