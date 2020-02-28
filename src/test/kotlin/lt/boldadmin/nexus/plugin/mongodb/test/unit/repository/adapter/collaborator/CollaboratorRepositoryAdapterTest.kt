@@ -3,7 +3,7 @@ package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter.collabora
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.verify
 import lt.boldadmin.nexus.api.type.entity.Collaborator
-import lt.boldadmin.nexus.api.type.valueobject.Address
+import lt.boldadmin.nexus.api.type.valueobject.location.Address
 import lt.boldadmin.nexus.api.type.valueobject.time.DayMinuteInterval
 import lt.boldadmin.nexus.api.type.valueobject.time.MinuteInterval
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.collaborator.CollaboratorRepositoryAdapter
