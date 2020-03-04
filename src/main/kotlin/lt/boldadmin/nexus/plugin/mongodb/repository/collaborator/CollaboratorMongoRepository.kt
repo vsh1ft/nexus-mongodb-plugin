@@ -1,6 +1,6 @@
 package lt.boldadmin.nexus.plugin.mongodb.repository.collaborator
 
-import lt.boldadmin.nexus.api.type.entity.collaborator.Collaborator
+import lt.boldadmin.nexus.api.type.entity.Collaborator
 import org.springframework.data.mongodb.repository.MongoRepository
 
 interface CollaboratorMongoRepository : MongoRepository<Collaborator, String> {

@@ -5,8 +5,8 @@ import com.mongodb.client.MongoCollection
 import com.nhaarman.mockitokotlin2.*
 import lt.boldadmin.nexus.api.type.entity.Project
 import lt.boldadmin.nexus.api.type.entity.Worklog
-import lt.boldadmin.nexus.api.type.entity.collaborator.Collaborator
-import lt.boldadmin.nexus.api.type.valueobject.DateRange
+import lt.boldadmin.nexus.api.type.entity.Collaborator
+import lt.boldadmin.nexus.api.type.valueobject.time.DateInterval
 import lt.boldadmin.nexus.api.type.valueobject.WorkStatus
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.UserRepositoryAdapter
@@ -120,25 +120,25 @@ class WorklogRepositoryAdapterTest {
     }
 
     @Test
-    fun `Gets interval ids by project id and date range`() {
+    fun `Gets interval ids by project id and date interval`() {
         val query = Query().addCriteria(mapOf("project.\$id" to PROJECT_ID, "workStatus" to "START"))
             .addCriteria(where("timestamp").gte(1558742400000).lte(1558915199999))
         stubQueryForWorklogIntervalIds(query)
-        val dateRange = DateRange(LocalDate.of(2019, 5, 25), LocalDate.of(2019, 5, 26))
+        val dateInterval = DateInterval(LocalDate.of(2019, 5, 25), LocalDate.of(2019, 5, 26))
 
-        val actualIntervalIds = adapter.findIntervalIdsByProjectId(PROJECT_ID, dateRange)
+        val actualIntervalIds = adapter.findIntervalIdsByProjectId(PROJECT_ID, dateInterval)
 
         assertEquals(listOf(INTERVAL_ID), actualIntervalIds)
     }
 
     @Test
-    fun `Gets interval ids by collaborator id and date range`() {
+    fun `Gets interval ids by collaborator id and date interval`() {
         val query = Query().addCriteria(mapOf("collaborator.\$id" to COLLABORATOR_ID, "workStatus" to "START"))
             .addCriteria(where("timestamp").gte(1558742400000).lte(1558915199999))
         stubQueryForWorklogIntervalIds(query)
-        val dateRange = DateRange(LocalDate.of(2019, 5, 25), LocalDate.of(2019, 5, 26))
+        val dateInterval = DateInterval(LocalDate.of(2019, 5, 25), LocalDate.of(2019, 5, 26))
 
-        val actualIntervalIds = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID, dateRange)
+        val actualIntervalIds = adapter.findIntervalIdsByCollaboratorId(COLLABORATOR_ID, dateInterval)
 
         assertEquals(listOf(INTERVAL_ID), actualIntervalIds)
     }

@@ -2,7 +2,7 @@ package lt.boldadmin.nexus.plugin.mongodb.repository.adapter
 
 import lt.boldadmin.nexus.api.repository.WorklogRepository
 import lt.boldadmin.nexus.api.type.entity.Worklog
-import lt.boldadmin.nexus.api.type.valueobject.DateRange
+import lt.boldadmin.nexus.api.type.valueobject.time.DateInterval
 import lt.boldadmin.nexus.plugin.mongodb.repository.WorklogMongoRepository
 import lt.boldadmin.nexus.plugin.mongodb.type.entity.clone.WorklogClone
 import org.springframework.data.domain.Sort
@@ -19,16 +19,16 @@ class WorklogRepositoryAdapter(
     private val worklogMongoRepository: WorklogMongoRepository
 ): WorklogRepository {
 
-    override fun findIntervalIdsByCollaboratorId(collaboratorId: String, dateRange: DateRange): Collection<String> {
+    override fun findIntervalIdsByCollaboratorId(collaboratorId: String, interval: DateInterval): Collection<String> {
         val query = Query().addCriteria(mapOf("collaborator.\$id" to collaboratorId, "workStatus" to "START"))
-            .addCriteria(where("timestamp").gte(dateRange.startToEpochMilli()).lte(dateRange.endToEpochMilli()))
+            .addCriteria(where("timestamp").gte(interval.startToEpochMilli()).lte(interval.endToEpochMilli()))
 
         return findDistinctWorklogIntervalIds(query)
     }
 
-    override fun findIntervalIdsByProjectId(projectId: String, dateRange: DateRange): Collection<String> {
+    override fun findIntervalIdsByProjectId(projectId: String, interval: DateInterval): Collection<String> {
         val query = Query().addCriteria(mapOf("project.\$id" to projectId, "workStatus" to "START"))
-            .addCriteria(where("timestamp").gte(dateRange.startToEpochMilli()).lte(dateRange.endToEpochMilli()))
+            .addCriteria(where("timestamp").gte(interval.startToEpochMilli()).lte(interval.endToEpochMilli()))
 
         return findDistinctWorklogIntervalIds(query)
     }
@@ -78,7 +78,7 @@ class WorklogRepositoryAdapter(
 
     private fun LocalDate.toEpochMilli(time: LocalTime) = this.atTime(time).toInstant(ZoneOffset.UTC).toEpochMilli()
 
-    private fun DateRange.startToEpochMilli() = start.toEpochMilli(LocalTime.MIN)
+    private fun DateInterval.startToEpochMilli() = start.toEpochMilli(LocalTime.MIN)
 
-    private fun DateRange.endToEpochMilli() = end.toEpochMilli(LocalTime.MAX)
+    private fun DateInterval.endToEpochMilli() = end.toEpochMilli(LocalTime.MAX)
 }

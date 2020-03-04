@@ -1,7 +1,7 @@
 package lt.boldadmin.nexus.plugin.mongodb.repository.adapter.collaborator
 
 import lt.boldadmin.nexus.api.repository.CollaboratorRepository
-import lt.boldadmin.nexus.api.type.entity.collaborator.Collaborator
+import lt.boldadmin.nexus.api.type.entity.Collaborator
 import lt.boldadmin.nexus.plugin.mongodb.repository.collaborator.CollaboratorMongoRepository
 
 class CollaboratorRepositoryAdapter(private val collaboratorMongoRepository: CollaboratorMongoRepository):
