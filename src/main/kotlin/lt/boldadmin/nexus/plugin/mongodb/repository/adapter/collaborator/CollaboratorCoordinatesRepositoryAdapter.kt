@@ -1,7 +1,7 @@
 package lt.boldadmin.nexus.plugin.mongodb.repository.adapter.collaborator
 
 import lt.boldadmin.nexus.api.repository.CollaboratorCoordinatesRepository
-import lt.boldadmin.nexus.api.type.valueobject.CollaboratorCoordinates
+import lt.boldadmin.nexus.api.type.valueobject.location.CollaboratorCoordinates
 import lt.boldadmin.nexus.plugin.mongodb.repository.collaborator.CollaboratorCoordinatesMongoRepository
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria.where

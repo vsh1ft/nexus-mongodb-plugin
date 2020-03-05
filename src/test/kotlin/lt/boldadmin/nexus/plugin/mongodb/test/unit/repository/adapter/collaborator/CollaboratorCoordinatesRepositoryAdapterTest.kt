@@ -3,8 +3,8 @@ package lt.boldadmin.nexus.plugin.mongodb.test.unit.repository.adapter.collabora
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import lt.boldadmin.nexus.api.type.valueobject.CollaboratorCoordinates
-import lt.boldadmin.nexus.api.type.valueobject.Coordinates
+import lt.boldadmin.nexus.api.type.valueobject.location.CollaboratorCoordinates
+import lt.boldadmin.nexus.api.type.valueobject.location.Coordinates
 import lt.boldadmin.nexus.plugin.mongodb.repository.adapter.collaborator.CollaboratorCoordinatesRepositoryAdapter
 import lt.boldadmin.nexus.plugin.mongodb.repository.collaborator.CollaboratorCoordinatesMongoRepository
 import org.junit.jupiter.api.Assertions.assertEquals
